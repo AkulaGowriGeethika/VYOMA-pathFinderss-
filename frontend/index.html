@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="theme-color" content="#0b1220">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="VYOMA">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="vyoma-icon.png.png">
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#2563eb">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="VYOMA">
+
+  <link rel="icon" type="image/png" href="./vyoma-icon.png.png">
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
+
+  <link rel="stylesheet" href="./style.css">
+
+  <title>VYOMA Smart Navigation</title>
+</head>
+
+<body>
+<section id="loginScreen" class="login-screen" aria-label="VYOMA login">
+  <div class="login-card">
+    <img class="login-logo" src="./logo.png.jpeg" alt="VYOMA">
+    <div class="login-kicker">SMART NAVIGATION SYSTEM</div>
+    <h1>Welcome to VYOMA</h1>
+    <p class="login-subtitle">Sign in to access your navigation dashboard.</p>
+    <form id="loginForm" class="login-form">
+      <label for="loginEmail">Email</label>
+      <input id="loginEmail" type="email" autocomplete="username" placeholder="Enter your email" required>
+      <label for="loginPassword">Password</label>
+      <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter your password" minlength="4" required>
+      <div id="loginError" class="login-error" role="alert"></div>
+      <button type="submit" class="login-submit">Login</button>
+    </form>
+
+    <div class="login-divider"><span>OR</span></div>
+
+    <button type="button" id="googleLoginBtn" class="google-login-btn">
+      <span class="google-icon" aria-hidden="true">
+        <svg viewBox="0 0 48 48" role="img" focusable="false">
+          <path fill="#EA4335" d="M24 9.5c3.1 0 5.9 1.1 8.1 3.2l6-6C34.4 3.1 29.6 1 24 1 14.6 1 6.5 6.4 2.5 14.2l7 5.4C11.4 13.9 17.1 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.6c-.5 2.9-2.2 5.4-4.6 7.1l7.1 5.5c4.2-3.9 7.4-9.7 7.4-17.1z"/>
+          <path fill="#34A853" d="M9.5 28.8A14.8 14.8 0 0 1 9 24c0-1.7.3-3.3.8-4.8l-7-5.4A23.9 23.9 0 0 0 1 24c0 3.8.9 7.4 2.5 10.6l6-5.8z"/>
+          <path fill="#FBBC05" d="M24 47c5.6 0 10.4-1.8 13.9-4.9l-7.1-5.5c-1.9 1.3-4.2 2.1-6.8 2.1-6.9 0-12.6-4.4-14.7-10.5l-7 5.4C6.5 40.6 14.6 47 24 47z"/>
+        </svg>
+      </span>
+      <span>Continue with Google</span>
+    </button>
+
+    <div class="login-demo-note">Sign in with your Firebase account.</div>
+  </div>
+</section>
+
+
+<div id="app">
+
+  <!-- MAP -->
+  <div id="map"></div>
+
+  <!-- GNSS LOSS RED OVERLAY -->
+  <div id="lossOverlay"></div>
+
+
+  <!-- HEADER -->
+  <header class="app-header">
+
+    <div class="brand">
+
+      <img
+        src="./logo.png.jpeg"
+        class="logo"
+        alt="VYOMA"
+      >
+
+      <div class="brand-text">
+        <div class="brand-name">VYOMA</div>
+        <div class="brand-subtitle">
+          Smart Navigation
+        </div>
+      </div>
+
+    </div>
+
+    <div class="header-status">
+      <span class="status-dot"></span>
+      <span id="headerStatus">READY</span>
+    </div>
+
+  </header>
+
+
+  <!-- SPEED / HEADING -->
+  <section class="navigation-info">
+
+    <div class="nav-info-main">
+
+      <div class="nav-speed">
+        <span id="speedValue">0</span>
+        <small>km/h</small>
+      </div>
+
+      <div class="nav-heading">
+
+        <svg class="ui-icon" viewBox="0 0 24 24">
+          <path d="M12 2l7 20-7-4-7 4 7-20z"></path>
+        </svg>
+
+        <span id="headingValue">0°</span>
+
+      </div>
+
+    </div>
+
+    <div
+      class="nav-status"
+      id="navStatus"
+    >
+      NOT NAVIGATING
+    </div>
+
+  </section>
+
+
+  <!-- MODE -->
+  <section class="mode-card">
+
+    <div class="mode-icon">
+
+      <svg class="ui-icon" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8"></circle>
+        <circle cx="12" cy="12" r="2"></circle>
+      </svg>
+
+    </div>
+
+    <div class="mode-text">
+
+      <div id="modeTitle">
+        NORMAL NAVIGATION
+      </div>
+
+      <small id="modeSubtitle">
+        Real GPS + IMU
+      </small>
+
+    </div>
+
+    <div
+      class="mode-indicator"
+      id="modeIndicator"
+    >
+      GNSS
+    </div>
+
+  </section>
+
+
+  <!-- GUIDANCE -->
+  <section class="guidance-card">
+
+    <div class="guidance-icon" id="guidanceIcon">
+
+      <svg
+        class="ui-icon"
+        viewBox="0 0 24 24"
+      >
+        <path d="M12 19V5"></path>
+        <path d="M6 11l6-6 6 6"></path>
+      </svg>
+
+    </div>
+
+    <div class="guidance-content">
+
+      <div id="guidanceInstruction">
+        Calculate a route to begin
+      </div>
+
+      <div id="guidanceDistance">
+        Awaiting route
+      </div>
+
+      <div
+        id="guidanceRoad"
+        class="guidance-road"
+      ></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- RECENTER -->
+  <button
+    id="recenterBtn"
+    class="floating-button recenter-button"
+    aria-label="Recenter"
+  >
+
+    <svg
+      class="ui-icon"
+      viewBox="0 0 24 24"
+    >
+      <circle cx="12" cy="12" r="7"></circle>
+      <circle cx="12" cy="12" r="2"></circle>
+    </svg>
+
+  </button>
+
+
+  <!-- ALWAYS VISIBLE GNSS CONTROLS -->
+  <div class="gnss-controls">
+
+    <button
+      id="simulateLossBtn"
+      class="gnss-button loss-button"
+      aria-label="Simulate GNSS loss"
+    >
+
+      <svg
+        class="ui-icon"
+        viewBox="0 0 24 24"
+      >
+        <path d="M12 3L22 20H2L12 3z"></path>
+        <path d="M12 9v5"></path>
+        <path d="M12 17h.01"></path>
+      </svg>
+
+      <span>SIMULATE GNSS LOSS</span>
+
+    </button>
+
+
+    <button
+      id="restoreGnssBtn"
+      class="gnss-button restore-button"
+      aria-label="Restore GNSS"
+    >
+
+      <svg
+        class="ui-icon"
+        viewBox="0 0 24 24"
+      >
+        <path d="M20 11a8 8 0 10-2.3 5.7"></path>
+        <path d="M20 5v6h-6"></path>
+      </svg>
+
+      <span>RESTORE GNSS</span>
+
+    </button>
+
+  </div>
+
+
+  <!-- BOTTOM SHEET -->
+  <aside
+    id="bottomSheet"
+    class="bottom-sheet"
+  >
+
+    <div
+      id="sheetHandleArea"
+      class="sheet-handle-area"
+    >
+      <div class="sheet-handle"></div>
+    </div>
+
+
+    <div class="sheet-content">
+
+
+      <!-- NAVIGATE PANEL -->
+      <section
+        id="navigatePanel"
+        class="panel active-panel"
+      >
+
+        <div class="panel-title">
+
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <path d="M12 19V5"></path>
+            <path d="M6 11l6-6 6 6"></path>
+          </svg>
+
+          Navigate
+
+        </div>
+
+
+        <div class="route-input">
+
+          <label>From</label>
+
+          <div class="input-row">
+
+            <input
+              id="fromInput"
+              type="text"
+              placeholder="Current Location"
+              value="Current Location"
+            >
+
+            <button
+              id="useLocationBtn"
+              class="small-action"
+              title="Use current location"
+            >
+
+              <svg class="ui-icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="7"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+              </svg>
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div class="route-input">
+
+          <label>Destination</label>
+
+          <input
+            id="toInput"
+            type="text"
+            placeholder="Enter destination"
+          >
+
+        </div>
+
+
+        <button
+          id="calculateRouteBtn"
+          class="primary-button"
+        >
+
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <path d="M4 6h16"></path>
+            <path d="M4 12h16"></path>
+            <path d="M4 18h16"></path>
+          </svg>
+
+          Calculate Route
+
+        </button>
+
+
+        <button
+          id="startRealBtn"
+          class="action-button"
+        >
+
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"></path>
+          </svg>
+
+          Start Navigation
+
+        </button>
+
+
+        <button
+          id="prototypeBtn"
+          class="action-button prototype-action"
+        >
+
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M10 8l6 4-6 4z"></path>
+          </svg>
+
+          Prototype Mode
+
+        </button>
+
+
+        <button
+          id="stopBtn"
+          class="secondary-button"
+        >
+
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <rect x="7" y="7" width="10" height="10"></rect>
+          </svg>
+
+          Stop Navigation
+
+        </button>
+
+
+        <div
+          id="systemStatus"
+          class="system-status"
+        >
+          System ready
+        </div>
+
+      </section>
+
+
+
+      <!-- ROUTE PANEL -->
+      <section
+        id="routePanel"
+        class="panel"
+      >
+
+        <div class="panel-title">
+
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <path d="M4 5l6-2 4 2 6-2v16l-6 2-4-2-6 2z"></path>
+            <path d="M10 3v16"></path>
+            <path d="M14 5v16"></path>
+          </svg>
+
+          Route
+
+        </div>
+
+
+        <div
+          id="routeStatus"
+          class="system-status"
+        >
+          No route calculated
+        </div>
+
+
+        <div class="route-stats">
+
+          <div class="stat-box">
+            <span>Distance</span>
+            <strong id="distanceValue">--</strong>
+          </div>
+
+          <div class="stat-box">
+            <span>Duration</span>
+            <strong id="durationValue">--</strong>
+          </div>
+
+          <div class="stat-box">
+            <span>Remaining</span>
+            <strong id="remainingValue">--</strong>
+          </div>
+
+        </div>
+
+
+        <div
+          id="routeInfo"
+          class="route-info"
+        >
+          Calculate a route to view navigation information.
+        </div>
+
+      </section>
+
+
+
+      <!-- AI PANEL -->
+      <section
+        id="aiPanel"
+        class="panel"
+      >
+
+        <div class="panel-title">
+
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <rect x="4" y="4" width="16" height="16" rx="3"></rect>
+            <path d="M8 9h8"></path>
+            <path d="M8 13h5"></path>
+            <path d="M8 17h3"></path>
+          </svg>
+
+          AI + Dead Reckoning
+
+        </div>
+
+
+        <div
+          id="aiStatus"
+          class="ai-system-status"
+        >
+          AI system ready
+        </div>
+
+
+        <div class="ai-grid">
+
+          <div class="ai-metric">
+            <span>DRIFT</span>
+            <strong id="driftValue">0.00 m</strong>
+          </div>
+
+          <div class="ai-metric">
+            <span>ML ESTIMATE</span>
+            <strong id="mlValue">0.00 m</strong>
+          </div>
+
+          <div class="ai-metric">
+            <span>FILTER CORRECTION</span>
+            <strong id="correctionValue">0.00 m</strong>
+          </div>
+
+          <div class="ai-metric">
+            <span>IMU SAMPLES</span>
+            <strong id="sampleValue">0</strong>
+          </div>
+
+        </div>
+
+
+        <div class="processing-bar">
+
+          <div
+            id="processingFill"
+            class="processing-fill"
+          ></div>
+
+        </div>
+
+
+        <div class="ai-explanation">
+          During GNSS loss, VYOMA combines IMU data,
+          GRU displacement estimation and filtering
+          to estimate vehicle motion.
+        </div>
+
+
+        <div class="sih-section">
+          <div class="sih-section-title">SIH IDR Diagnostics</div>
+
+          <div class="sih-status-grid">
+            <div class="sih-status-card">
+              <span>GNSS / INS</span>
+              <strong id="sihFusionStatus">GNSS + INS READY</strong>
+            </div>
+            <div class="sih-status-card">
+              <span>MAP MATCHING</span>
+              <strong id="sihMapMatchStatus">ROUTE CONSTRAINED</strong>
+            </div>
+            <div class="sih-status-card">
+              <span>NHC</span>
+              <strong id="sihNhcStatus">ROAD CONSTRAINT</strong>
+            </div>
+            <div class="sih-status-card">
+              <span>UPDATE RATE</span>
+              <strong id="sihRateValue">10 Hz TARGET</strong>
+            </div>
+          </div>
+
+          <div class="sih-card">
+            <div class="sih-card-head">Vehicle Alignment</div>
+            <div class="sih-metric-grid">
+              <div><span>PITCH</span><strong id="sihPitch">0.0°</strong></div>
+              <div><span>ROLL</span><strong id="sihRoll">0.0°</strong></div>
+              <div><span>YAW</span><strong id="sihYaw">0.0°</strong></div>
+              <div><span>HEADING</span><strong id="sihHeading">0.0°</strong></div>
+            </div>
+            <div class="sih-note">Pitch/roll are estimated from gravity; yaw uses heading/GNSS reference when available.</div>
+          </div>
+
+          <div class="sih-card">
+            <div class="sih-card-head">AI / Sensor Processing</div>
+            <div class="sih-metric-grid">
+              <div><span>GRU DISPLACEMENT</span><strong id="sihGruDisp">0.00 m</strong></div>
+              <div><span>AI SPEED</span><strong id="sihAiSpeed">0.0 km/h</strong></div>
+              <div><span>VIBRATION FILTER</span><strong id="sihVibration">ACTIVE</strong></div>
+              <div><span>SENSOR CONFIDENCE</span><strong id="sihConfidence">--</strong></div>
+            </div>
+            <div class="sih-note">IMU sequence: 50 samples × 6 channels (AX, AY, AZ, GX, GY, GZ).</div>
+          </div>
+
+          <div class="sih-card">
+            <div class="sih-card-head">Navigation Intelligence</div>
+            <div class="sih-check-grid">
+              <div><span>✓</span> GNSS + INS fusion</div>
+              <div><span>✓</span> Dead reckoning</div>
+              <div><span>✓</span> Route/map matching</div>
+              <div><span>✓</span> Non-holonomic road constraint</div>
+              <div><span>✓</span> GNSS loss transition</div>
+              <div><span>✓</span> GNSS recovery / re-fusion</div>
+            </div>
+          </div>
+
+          <div class="sih-card">
+            <div class="sih-card-head">Performance & SIH Targets</div>
+            <div class="sih-metric-grid">
+              <div><span>DRIFT RATIO</span><strong id="sihDriftRatio">&lt; 10% TARGET</strong></div>
+              <div><span>50 m TARGET</span><strong>&lt; 5 m</strong></div>
+              <div><span>1 km TARGET</span><strong>&lt; 100 m</strong></div>
+              <div><span>EDGE IMU</span><strong>~200 Hz</strong></div>
+            </div>
+            <div class="sih-note">These are SIH validation targets. The prototype does not claim measured compliance until real driving data is evaluated.</div>
+          </div>
+
+
+          <div class="sih-card sih-validation-lab">
+            <div class="sih-card-head">SIH Validation Lab</div>
+
+            <div class="sih-lab-controls">
+              <button type="button" class="secondary-btn" id="runDriftBenchmarkBtn">
+                Run DR Benchmark
+              </button>
+              <button type="button" class="secondary-btn" id="runPerformanceBenchmarkBtn">
+                Run Performance Test
+              </button>
+            </div>
+
+            <div class="sih-metric-grid">
+              <div><span>DRIFT</span><strong id="labDrift">READY</strong></div>
+              <div><span>50 M</span><strong id="lab50m">&lt; 5 m TARGET</strong></div>
+              <div><span>1 KM</span><strong id="lab1km">&lt; 100 m TARGET</strong></div>
+              <div><span>RATE</span><strong id="labRate">10 Hz TARGET</strong></div>
+            </div>
+
+            <div class="sih-deploy-row">
+              <span>GNSS → Dead Reckoning</span><strong id="labGnssLoss">READY</strong>
+            </div>
+            <div class="sih-deploy-row">
+              <span>Dead Reckoning → GNSS</span><strong id="labRecovery">READY</strong>
+            </div>
+            <div class="sih-deploy-row">
+              <span>Map / NHC constraint</span><strong id="labConstraint">READY</strong>
+            </div>
+            <div class="sih-deploy-row">
+              <span>Pitch / Roll / Yaw</span><strong id="labAlignment">READY</strong>
+            </div>
+
+            <div class="sih-note" id="labNote">
+              Benchmark controls verify the software pipeline. Real SIH accuracy claims still require real trajectory/reference data and hardware measurements.
+            </div>
+          </div>
+
+          <div class="sih-card">
+            <div class="sih-card-head">Deployment & Validation</div>
+            <div class="sih-deploy-row">
+              <span>Smartphone inference</span><strong>PROTOTYPE</strong>
+            </div>
+            <div class="sih-deploy-row">
+              <span>External IMU / edge deployment</span><strong>ARCHITECTURE READY</strong>
+            </div>
+            <div class="sih-deploy-row">
+              <span>Offline OSM / map data</span><strong>ENHANCEMENT</strong>
+            </div>
+            <div class="sih-deploy-row">
+              <span>IO-VNBD validation</span><strong>REQUIRED</strong>
+            </div>
+
+          <div class="sih-card">
+            <div class="sih-card-head">Dataset / Validation Status</div>
+            <div class="sih-deploy-row">
+              <span>IoV safety dataset</span><strong>INTEGRATED</strong>
+            </div>
+            <div class="sih-deploy-row">
+              <span>Collision-risk ML benchmark</span><strong>AVAILABLE</strong>
+            </div>
+            <div class="sih-deploy-row">
+              <span>Navigation trajectory dataset</span><strong>REQUIRED</strong>
+            </div>
+            <div class="sih-deploy-row">
+              <span>Measured DR drift benchmark</span><strong>REQUIRED</strong>
+            </div>
+            <div class="sih-note">
+              Dataset IoV is used for auxiliary IoV safety modeling. It is not used to fabricate navigation drift or IO-VNBD results.
+            </div>
+          </div>
+          </div>
+        </div>
+
+
+        <!-- REAL IMU -->
+        <div class="imu-section">
+
+          <div class="sub-title">
+            Live IMU
+          </div>
+
+          <div
+            id="realImuStatus"
+            class="imu-status"
+          >
+            SENSOR IDLE
+          </div>
+
+
+          <div class="imu-grid">
+
+            <div>
+              <span>AX</span>
+              <strong id="axValue">0.00</strong>
+            </div>
+
+            <div>
+              <span>AY</span>
+              <strong id="ayValue">0.00</strong>
+            </div>
+
+            <div>
+              <span>AZ</span>
+              <strong id="azValue">0.00</strong>
+            </div>
+
+            <div>
+              <span>GX</span>
+              <strong id="gxValue">0.00</strong>
+            </div>
+
+            <div>
+              <span>GY</span>
+              <strong id="gyValue">0.00</strong>
+            </div>
+
+            <div>
+              <span>GZ</span>
+              <strong id="gzValue">0.00</strong>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- SETTINGS PANEL -->
+      <section
+        id="settingsPanel"
+        class="panel"
+      >
+
+        <div class="panel-title">
+
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.7 1.7 0 000-6l-1.7-.3a6.5 6.5 0 00-1-1.7L17 5.4a1.7 1.7 0 00-5-1.7L11 5a6.5 6.5 0 00-2 0l-1-1.3a1.7 1.7 0 00-5 1.7l.3 1.6a6.5 6.5 0 00-1 1.7L.6 9a1.7 1.7 0 000 6l1.7.3a6.5 6.5 0 001 1.7L3 18.6a1.7 1.7 0 005 1.7l1-1.3a6.5 6.5 0 002 0l1 1.3a1.7 1.7 0 005-1.7l-.3-1.6a6.5 6.5 0 001-1.7z"></path>
+          </svg>
+
+          Settings
+
+        </div>
+
+
+        <label class="setting-row">
+          <span>Follow vehicle</span>
+          <input
+            id="followToggle"
+            type="checkbox"
+            checked
+          >
+        </label>
+
+
+        <label class="setting-row">
+          <span>Automatic zoom</span>
+          <input
+            id="zoomToggle"
+            type="checkbox"
+            checked
+          >
+        </label>
+
+
+        <label class="setting-row">
+          <span>Dark mode</span>
+          <input
+            id="themeToggle"
+            type="checkbox"
+          >
+        </label>
+
+      </section>
+
+    </div>
+
+  </aside>
+
+
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+
+    <button
+      id="navNavigate"
+      class="bottom-nav-item active"
+      data-panel="navigate"
+    >
+
+      <svg class="ui-icon" viewBox="0 0 24 24">
+        <path d="M12 19V5"></path>
+        <path d="M6 11l6-6 6 6"></path>
+      </svg>
+
+      <span>Navigate</span>
+
+    </button>
+
+
+    <button
+      id="navRoute"
+      class="bottom-nav-item"
+      data-panel="route"
+    >
+
+      <svg class="ui-icon" viewBox="0 0 24 24">
+        <path d="M4 5l6-2 4 2 6-2v16l-6 2-4-2-6 2z"></path>
+        <path d="M10 3v16"></path>
+        <path d="M14 5v16"></path>
+      </svg>
+
+      <span>Route</span>
+
+    </button>
+
+
+    <button
+      id="navAI"
+      class="bottom-nav-item"
+      data-panel="ai"
+    >
+
+      <svg class="ui-icon" viewBox="0 0 24 24">
+        <rect x="5" y="5" width="14" height="14" rx="3"></rect>
+        <circle cx="9" cy="10" r="1"></circle>
+        <circle cx="15" cy="10" r="1"></circle>
+        <path d="M9 15h6"></path>
+      </svg>
+
+      <span>AI / DR</span>
+
+    </button>
+
+
+    <button
+      id="navSettings"
+      class="bottom-nav-item"
+      data-panel="settings"
+    >
+
+      <svg class="ui-icon" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19 13.5a7 7 0 000-3L21 9l-2-3-2.5 1a7 7 0 00-2.5-1.5L13 3h-3L9 5.5A7 7 0 006.5 7L4 6 2 9l2 1.5a7 7 0 000 3L2 15l2 3 2.5-1a7 7 0 002.5 1.5L10 21h3l1-2.5a7 7 0 002.5-1.5l2.5 1 2-3z"></path>
+      </svg>
+
+      <span>More</span>
+
+    </button>
+
+  </nav>
+
+</div>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="./firebase-config.js"></script>
+<script src="./backend-config.js"></script>
+<script src="./app.js"></script>
+
+<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(()=>{}));}</script>
+</body>
+</html>
