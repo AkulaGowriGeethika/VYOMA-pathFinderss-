@@ -1,0 +1,30 @@
+{
+  "file": "Dataset IoV.xlsx",
+  "sheets": {
+    "IoV Dataset": {
+      "rows": 206775,
+      "columns": [
+        "Number of Lanes",
+        "Status of driver",
+        "Nature of environment",
+        "Velocity of vehicle",
+        "Distance between vehicles",
+        "Breaking capability",
+        "Collussion"
+      ],
+      "missing_cells": 0,
+      "numeric_columns": [
+        "Number of Lanes",
+        "Status of driver",
+        "Nature of environment",
+        "Velocity of vehicle",
+        "Distance between vehicles",
+        "Breaking capability",
+        "Collussion"
+      ]
+    }
+  },
+  "selected_sheet": "IoV Dataset",
+  "selected_target": "Collussion",
+  "note": "This IoV dataset contains vehicle/environment/collision features, not smartphone IMU trajectory data. It can support an IoV safety/auxiliary model, but it cannot validly prove dead-reckoning drift or IO-VNBD navigation accuracy."
+}
