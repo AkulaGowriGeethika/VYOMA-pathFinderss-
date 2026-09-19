@@ -1,0 +1,15 @@
+{
+  "task": "IoV collision classification",
+  "target": "Collussion",
+  "train_rows": 165420,
+  "test_rows": 41355,
+  "classes": [
+    "0",
+    "1"
+  ],
+  "accuracy": 1.0,
+  "precision_weighted": 1.0,
+  "recall_weighted": 1.0,
+  "f1_weighted": 1.0,
+  "warning": "This is an auxiliary IoV safety benchmark, not a dead-reckoning drift benchmark."
+}
