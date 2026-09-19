@@ -5,8 +5,10 @@ from tensorflow.keras.models import load_model
 
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "models")
 
-model = load_model(os.path.join(MODEL_DIR, "gru_model.keras"))
-seq_scaler = joblib.load(os.path.join(MODEL_DIR, "seq_scaler.pkl"))
+model = load_model(
+    os.path.join(MODEL_DIR, "gru_model.keras"),
+    compile=False
+)seq_scaler = joblib.load(os.path.join(MODEL_DIR, "seq_scaler.pkl"))
 y_scaler = joblib.load(os.path.join(MODEL_DIR, "y_scaler.pkl"))
 
 def predict(sequence):
