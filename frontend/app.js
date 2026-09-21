@@ -103,8 +103,7 @@
 
 // Replace this with your CURRENT backend Cloudflare URL.
 const BACKEND_URL =
-"https://vyoma-api.onrender.com";
-
+"https://vyoma-navigate.onrender.com";
 /* =========================================================
    GLOBAL STATE
 ========================================================= */
