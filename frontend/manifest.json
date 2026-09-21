@@ -1,0 +1,15 @@
+{
+  "name": "VYOMA Smart Navigation",
+  "short_name": "VYOMA",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "description": "Smart GNSS and dead-reckoning navigation prototype",
+  "icons": [
+    {"src":"vyoma-icon.png.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"vyoma-icon.png.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}

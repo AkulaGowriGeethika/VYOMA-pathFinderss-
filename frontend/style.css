@@ -1,0 +1,3438 @@
+/* =========================================================
+   VYOMA SMART NAVIGATION
+   CLEAN MOBILE UI
+========================================================= */
+
+:root {
+  --bg: #ffffff;
+  --surface: rgba(255,255,255,.96);
+  --surface-solid: #ffffff;
+
+  --text: #111827;
+  --muted: #64748b;
+
+  --border: #e2e8f0;
+
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+
+  --danger: #ef4444;
+  --danger-dark: #dc2626;
+
+  --success: #16a34a;
+
+  --purple: #7c3aed;
+
+  --shadow:
+    0 8px 28px rgba(15,23,42,.14);
+
+  --radius: 17px;
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+
+  margin: 0;
+
+  overflow: hidden;
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  color: var(--text);
+
+  background: var(--bg);
+}
+
+
+button,
+input {
+  font: inherit;
+}
+
+
+button {
+  border: none;
+  cursor: pointer;
+}
+
+
+.ui-icon {
+  width: 20px;
+  height: 20px;
+
+  fill: none;
+
+  stroke: currentColor;
+
+  stroke-width: 2;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+/* =========================================================
+   MAP
+========================================================= */
+
+#map {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 1;
+}
+
+
+.leaflet-control-attribution {
+  font-size: 8px;
+}
+
+
+/* =========================================================
+   RED OVERLAY
+========================================================= */
+
+#lossOverlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 700;
+
+  pointer-events: none;
+
+  display: none;
+
+  background:
+    rgba(239,68,68,.13);
+}
+
+
+body.gnss-loss #lossOverlay {
+  display: block;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.app-header {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 62px;
+
+  z-index: 1000;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding: 7px 14px;
+
+  background:
+    rgba(255,255,255,.95);
+
+  backdrop-filter: blur(14px);
+
+  border-bottom:
+    1px solid rgba(226,232,240,.8);
+
+  box-shadow:
+    0 2px 14px rgba(15,23,42,.08);
+}
+
+
+.brand {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+}
+
+
+.logo {
+  width: 42px;
+  height: 42px;
+
+  object-fit: contain;
+
+  border-radius: 8px;
+}
+
+
+.brand-text {
+  line-height: 1.05;
+}
+
+
+.brand-name {
+  font-size: 19px;
+
+  font-weight: 900;
+
+  letter-spacing: .4px;
+}
+
+
+.brand-subtitle {
+  margin-top: 4px;
+
+  color: var(--muted);
+
+  font-size: 10px;
+
+  font-weight: 600;
+}
+
+
+.header-status {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  color: var(--success);
+
+  font-size: 10px;
+
+  font-weight: 900;
+}
+
+
+.status-dot {
+  width: 9px;
+  height: 9px;
+
+  border-radius: 50%;
+
+  background: var(--success);
+}
+
+
+/* =========================================================
+   SPEED CARD
+========================================================= */
+
+.navigation-info {
+  position: fixed;
+
+  top: 76px;
+  left: 10px;
+
+  z-index: 850;
+
+  width: 190px;
+
+  padding: 11px 13px;
+
+  border-radius: 17px;
+
+  background: var(--surface);
+
+  box-shadow: var(--shadow);
+
+  backdrop-filter: blur(14px);
+}
+
+
+.nav-info-main {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+}
+
+
+.nav-speed {
+  display: flex;
+
+  align-items: baseline;
+
+  gap: 4px;
+}
+
+
+.nav-speed span {
+  font-size: 27px;
+
+  font-weight: 900;
+}
+
+
+.nav-speed small {
+  color: var(--muted);
+
+  font-size: 11px;
+}
+
+
+.nav-heading {
+  display: flex;
+
+  align-items: center;
+
+  gap: 4px;
+
+  font-size: 13px;
+
+  font-weight: 800;
+}
+
+
+.nav-heading .ui-icon {
+  width: 18px;
+  height: 18px;
+}
+
+
+.nav-status {
+  margin-top: 5px;
+
+  color: var(--muted);
+
+  font-size: 9px;
+
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   MODE CARD
+========================================================= */
+
+.mode-card {
+  position: fixed;
+
+  top: 76px;
+  left: 210px;
+  right: 10px;
+
+  z-index: 850;
+
+  min-height: 52px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 8px 10px;
+
+  border-radius: 16px;
+
+  background: var(--surface);
+
+  box-shadow: var(--shadow);
+
+  backdrop-filter: blur(14px);
+}
+
+
+.mode-icon {
+  width: 30px;
+  height: 30px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #eff6ff;
+
+  color: var(--primary);
+}
+
+
+.mode-icon .ui-icon {
+  width: 17px;
+  height: 17px;
+}
+
+
+.mode-text {
+  min-width: 0;
+}
+
+
+#modeTitle {
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+
+  font-size: 10px;
+
+  font-weight: 900;
+}
+
+
+.mode-card small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: var(--muted);
+
+  font-size: 8px;
+
+  font-weight: 600;
+}
+
+
+.mode-indicator {
+  margin-left: auto;
+
+  padding: 4px 6px;
+
+  border-radius: 999px;
+
+  background: #dcfce7;
+
+  color: #166534;
+
+  font-size: 7px;
+
+  font-weight: 900;
+}
+
+
+.mode-indicator.prototype {
+  background: #ede9fe;
+
+  color: #6d28d9;
+}
+
+
+.mode-indicator.loss {
+  background: #fee2e2;
+
+  color: #991b1b;
+}
+
+
+/* =========================================================
+   GUIDANCE
+========================================================= */
+
+.guidance-card {
+  position: fixed;
+
+  top: 142px;
+
+  left: 10px;
+  right: 10px;
+
+  z-index: 840;
+
+  min-height: 68px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 10px 12px;
+
+  border-radius: 17px;
+
+  background: var(--surface);
+
+  box-shadow: var(--shadow);
+
+  backdrop-filter: blur(14px);
+}
+
+
+.guidance-icon {
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: #eff6ff;
+
+  color: var(--primary);
+}
+
+
+.guidance-icon .ui-icon {
+  width: 20px;
+  height: 20px;
+}
+
+
+.guidance-content {
+  min-width: 0;
+}
+
+
+#guidanceInstruction {
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+
+  font-size: 13px;
+
+  font-weight: 900;
+}
+
+
+#guidanceDistance {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--muted);
+
+  font-size: 10px;
+
+  font-weight: 700;
+}
+
+
+.guidance-road {
+  margin-top: 2px;
+
+  color: var(--muted);
+
+  font-size: 9px;
+}
+
+
+/* =========================================================
+   RECENTER
+========================================================= */
+
+.floating-button {
+  position: fixed;
+
+  z-index: 900;
+
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--surface-solid);
+
+  color: var(--text);
+
+  box-shadow: var(--shadow);
+}
+
+
+.recenter-button {
+  top: 142px;
+  right: 10px;
+
+  transform:
+    translateY(0);
+}
+
+
+.floating-button:active {
+  transform: scale(.94);
+}
+
+
+/* =========================================================
+   GNSS CONTROLS
+   FIXED TO MAP — NEVER INSIDE SHEET
+========================================================= */
+
+.gnss-controls {
+  position: fixed !important;
+
+  top: 220px !important;
+
+  right: 10px !important;
+
+  left: auto !important;
+  bottom: auto !important;
+
+  width: 145px !important;
+
+  z-index: 3000 !important;
+
+  display: flex !important;
+
+  flex-direction: column !important;
+
+  gap: 7px !important;
+
+  pointer-events: auto !important;
+}
+
+
+.gnss-button {
+  position: relative !important;
+
+  width: 145px !important;
+
+  min-height: 38px !important;
+
+  display: flex !important;
+
+  align-items: center !important;
+
+  justify-content: center !important;
+
+  gap: 5px !important;
+
+  padding: 7px 5px !important;
+
+  border-radius: 10px !important;
+
+  color: white !important;
+
+  font-size: 7.2px !important;
+
+  font-weight: 900 !important;
+
+  white-space: nowrap !important;
+
+  box-shadow:
+    0 5px 15px rgba(15,23,42,.20);
+
+  transition:
+    transform .15s,
+    filter .15s;
+}
+
+
+.gnss-button .ui-icon {
+  width: 16px;
+  height: 16px;
+
+  flex-shrink: 0;
+}
+
+
+.loss-button {
+  background: #ef4444 !important;
+}
+
+
+.restore-button {
+  background: #16a34a !important;
+}
+
+
+.gnss-button:active {
+  transform: scale(.97);
+}
+
+
+/* =========================================================
+   BOTTOM SHEET
+========================================================= */
+
+.bottom-sheet {
+  position: fixed;
+
+  left: 0;
+  right: 0;
+
+  bottom: 67px;
+
+  height:
+    min(470px, calc(100vh - 80px));
+
+  z-index: 1000;
+
+  background: var(--surface);
+
+  border-radius:
+    22px 22px 0 0;
+
+  box-shadow:
+    0 -10px 35px rgba(15,23,42,.16);
+
+  backdrop-filter: blur(18px);
+
+  transition:
+    transform .28s ease,
+    height .28s ease;
+}
+
+
+.bottom-sheet.hidden-sheet {
+  transform:
+    translateY(110%);
+}
+
+
+.bottom-sheet.expanded {
+  height:
+    calc(100vh - 67px);
+}
+
+
+.sheet-handle-area {
+  height: 35px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  touch-action: none;
+}
+
+
+.sheet-handle {
+  width: 48px;
+  height: 5px;
+
+  border-radius: 99px;
+
+  background: #cbd5e1;
+}
+
+
+.sheet-content {
+  height:
+    calc(100% - 35px);
+
+  overflow-y: auto;
+
+  padding:
+    0 15px 25px;
+}
+
+
+.panel {
+  display: none;
+}
+
+
+.active-panel {
+  display: block;
+}
+
+
+.panel-title {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 15px;
+
+  font-size: 17px;
+
+  font-weight: 900;
+}
+
+
+.panel-title .ui-icon {
+  color: var(--primary);
+}
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.route-input {
+  margin-bottom: 10px;
+}
+
+
+.route-input label {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: var(--muted);
+
+  font-size: 10px;
+
+  font-weight: 800;
+}
+
+
+.route-input input {
+  width: 100%;
+
+  height: 62px;
+
+  padding:
+    0 18px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 14px;
+
+  outline: none;
+
+  background: var(--surface-solid);
+
+  color: var(--text);
+
+  font-size: 14px;
+}
+
+
+.route-input input:focus {
+  border-color: var(--primary);
+
+  box-shadow:
+    0 0 0 3px rgba(37,99,235,.10);
+}
+
+
+.input-row {
+  display: flex;
+
+  gap: 8px;
+}
+
+
+.input-row input {
+  flex: 1;
+}
+
+
+.small-action {
+  width: 62px;
+
+  flex-shrink: 0;
+
+  border-radius: 14px;
+
+  background: #eff6ff;
+
+  color: var(--primary);
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.primary-button,
+.action-button,
+.secondary-button {
+  width: 100%;
+
+  min-height: 64px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 9px;
+
+  margin-top: 10px;
+
+  border-radius: 14px;
+
+  font-size: 17px;
+
+  font-weight: 900;
+}
+
+
+.primary-button {
+  background: var(--primary);
+
+  color: white;
+}
+
+
+.action-button {
+  background: #0f172a;
+
+  color: white;
+}
+
+
+.prototype-action {
+  background: var(--purple);
+}
+
+
+.secondary-button {
+  background: #f1f5f9;
+
+  color: #334155;
+}
+
+
+.system-status {
+  margin-top: 12px;
+
+  padding: 11px 13px;
+
+  border-radius: 11px;
+
+  background: #f8fafc;
+
+  color: var(--muted);
+
+  font-size: 10px;
+
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   ROUTE
+========================================================= */
+
+.route-stats {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 8px;
+}
+
+
+.stat-box {
+  padding: 12px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 12px;
+
+  background:
+    var(--surface-solid);
+}
+
+
+.stat-box span {
+  display: block;
+
+  color: var(--muted);
+
+  font-size: 9px;
+
+  font-weight: 700;
+}
+
+
+.stat-box strong {
+  display: block;
+
+  margin-top: 5px;
+
+  font-size: 13px;
+}
+
+
+.route-info {
+  margin-top: 12px;
+
+  padding: 12px;
+
+  border-radius: 12px;
+
+  background: #f8fafc;
+
+  color: var(--muted);
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   AI
+========================================================= */
+
+.ai-system-status,
+.imu-status {
+  margin-bottom: 11px;
+
+  padding: 10px 12px;
+
+  border-radius: 10px;
+
+  background: #dcfce7;
+
+  color: #166534;
+
+  font-size: 10px;
+
+  font-weight: 900;
+}
+
+
+.ai-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 8px;
+}
+
+
+.ai-metric {
+  padding: 12px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 12px;
+
+  background:
+    var(--surface-solid);
+}
+
+
+.ai-metric span {
+  display: block;
+
+  color: var(--muted);
+
+  font-size: 8px;
+
+  font-weight: 800;
+}
+
+
+.ai-metric strong {
+  display: block;
+
+  margin-top: 5px;
+
+  font-size: 14px;
+}
+
+
+.processing-bar {
+  height: 7px;
+
+  margin-top: 12px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #e2e8f0;
+}
+
+
+.processing-fill {
+  width: 0%;
+
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: var(--primary);
+
+  transition:
+    width .25s;
+}
+
+
+.ai-explanation {
+  margin-top: 10px;
+
+  color: var(--muted);
+
+  font-size: 10px;
+
+  line-height: 1.5;
+}
+
+
+.imu-section {
+  margin-top: 18px;
+}
+
+
+.sub-title {
+  margin-bottom: 8px;
+
+  font-size: 13px;
+
+  font-weight: 900;
+}
+
+
+.imu-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 8px;
+}
+
+
+.imu-grid > div {
+  padding: 10px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 11px;
+
+  background:
+    var(--surface-solid);
+}
+
+
+.imu-grid span {
+  display: block;
+
+  color: var(--muted);
+
+  font-size: 8px;
+
+  font-weight: 800;
+}
+
+
+.imu-grid strong {
+  display: block;
+
+  margin-top: 4px;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+.setting-row {
+  min-height: 55px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding: 0 4px;
+
+  border-bottom:
+    1px solid var(--border);
+
+  font-size: 13px;
+
+  font-weight: 700;
+}
+
+
+.setting-row input {
+  width: 20px;
+  height: 20px;
+}
+
+
+/* =========================================================
+   BOTTOM NAV
+========================================================= */
+
+.bottom-nav {
+  position: fixed;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 67px;
+
+  z-index: 4000;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  background:
+    var(--surface-solid);
+
+  border-top:
+    1px solid var(--border);
+
+  box-shadow:
+    0 -4px 20px rgba(15,23,42,.08);
+}
+
+
+.bottom-nav-item {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 3px;
+
+  color: #64748b;
+
+  background: transparent;
+
+  font-size: 9px;
+
+  font-weight: 800;
+}
+
+
+.bottom-nav-item .ui-icon {
+  width: 19px;
+  height: 19px;
+}
+
+
+.bottom-nav-item.active {
+  color: var(--primary);
+}
+
+
+/* =========================================================
+   VEHICLE
+========================================================= */
+
+.vyoma-vehicle {
+  background: transparent !important;
+
+  border: none !important;
+}
+
+
+.vehicle-marker {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #2563eb;
+
+  border: 3px solid white;
+
+  box-shadow:
+    0 4px 14px rgba(15,23,42,.30);
+}
+
+
+.vehicle-marker.loss {
+  background: #ef4444;
+}
+
+
+/* =========================================================
+   GNSS LOSS — RED EVERYTHING
+========================================================= */
+
+body.gnss-loss {
+  --primary: #ef4444;
+  --primary-dark: #dc2626;
+  --success: #ef4444;
+}
+
+
+body.gnss-loss .app-header,
+body.gnss-loss .navigation-info,
+body.gnss-loss .mode-card,
+body.gnss-loss .guidance-card,
+body.gnss-loss .floating-button,
+body.gnss-loss .bottom-sheet,
+body.gnss-loss .bottom-nav {
+  border-color:
+    rgba(239,68,68,.65);
+}
+
+
+body.gnss-loss .header-status {
+  color: #dc2626;
+}
+
+
+body.gnss-loss .status-dot {
+  background: #ef4444;
+}
+
+
+body.gnss-loss .mode-icon,
+body.gnss-loss .guidance-icon {
+  background: #fee2e2;
+
+  color: #dc2626;
+}
+
+
+body.gnss-loss .mode-indicator {
+  background: #fee2e2;
+
+  color: #991b1b;
+}
+
+
+body.gnss-loss .gnss-button {
+  background: #dc2626 !important;
+}
+
+
+body.gnss-loss .primary-button,
+body.gnss-loss .processing-fill {
+  background: #dc2626;
+}
+
+
+body.gnss-loss .panel-title .ui-icon,
+body.gnss-loss .bottom-nav-item.active {
+  color: #dc2626;
+}
+
+
+body.gnss-loss .ai-system-status,
+body.gnss-loss .imu-status {
+  background: #fee2e2;
+
+  color: #991b1b;
+}
+
+
+body.gnss-loss .system-status {
+  background: #fee2e2;
+
+  color: #991b1b;
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+body.dark-mode {
+  --bg: #020617;
+
+  --surface: rgba(15,23,42,.96);
+
+  --surface-solid: #0f172a;
+
+  --text: #f8fafc;
+
+  --muted: #94a3b8;
+
+  --border: #334155;
+}
+
+
+body.dark-mode .app-header,
+body.dark-mode .bottom-nav {
+  background:
+    rgba(15,23,42,.97);
+}
+
+
+body.dark-mode .route-info,
+body.dark-mode .system-status,
+body.dark-mode .secondary-button {
+  background: #1e293b;
+
+  color: #cbd5e1;
+}
+
+
+body.dark-mode .route-input input {
+  background: #020617;
+
+  color: #f8fafc;
+}
+
+
+body.dark-mode .mode-icon,
+body.dark-mode .guidance-icon,
+body.dark-mode .small-action {
+  background: #172554;
+}
+
+
+body.dark-mode .processing-bar {
+  background: #334155;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .app-header {
+    height: 59px;
+  }
+
+
+  .logo {
+    width: 40px;
+    height: 40px;
+  }
+
+
+  .brand-name {
+    font-size: 18px;
+  }
+
+
+  .navigation-info {
+    top: 70px;
+
+    left: 10px;
+
+    width: 170px;
+  }
+
+
+  .nav-speed span {
+    font-size: 23px;
+  }
+
+
+  .mode-card {
+    top: 70px;
+
+    left: 190px;
+
+    right: 10px;
+
+    min-width: 0;
+
+    padding: 8px;
+  }
+
+
+  .mode-icon {
+    width: 27px;
+    height: 27px;
+  }
+
+
+  .mode-indicator {
+    display: none;
+  }
+
+
+  .guidance-card {
+    top: 132px;
+
+    left: 10px;
+
+    right: 165px;
+
+    width: auto;
+  }
+
+
+  .recenter-button {
+    top: 132px;
+
+    right: 10px;
+
+    transform:
+      translateY(0);
+  }
+
+
+  .gnss-controls {
+    top: 215px !important;
+
+    right: 10px !important;
+
+    width: 145px !important;
+  }
+
+
+  .gnss-button {
+    width: 145px !important;
+
+    min-height: 36px !important;
+
+    font-size: 7px !important;
+  }
+
+
+  .bottom-sheet {
+    bottom: 67px;
+
+    height:
+      min(470px, calc(100vh - 72px));
+  }
+
+
+  .route-stats {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+
+
+  .imu-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+}
+
+
+@media (max-width: 430px) {
+
+  .navigation-info {
+    width: 165px;
+  }
+
+
+  .mode-card {
+    left: 183px;
+  }
+
+
+  .mode-card .mode-icon {
+    display: none;
+  }
+
+
+  .guidance-card {
+    right: 160px;
+  }
+
+
+  .gnss-controls {
+    top: 215px !important;
+
+    right: 8px !important;
+
+    width: 142px !important;
+  }
+
+
+  .gnss-button {
+    width: 142px !important;
+
+    font-size: 6.8px !important;
+  }
+
+
+  .primary-button,
+  .action-button,
+  .secondary-button {
+    min-height: 60px;
+
+    font-size: 16px;
+  }
+
+}
+
+/* VYOMA LOGIN SCREEN */
+.login-screen{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 20% 15%,rgba(37,99,235,.16),transparent 34%),radial-gradient(circle at 85% 85%,rgba(8,145,178,.14),transparent 34%),#f8fafc}
+.login-screen.hidden{display:none}
+.login-card{width:min(410px,100%);padding:32px 28px 26px;border:1px solid #e2e8f0;border-radius:24px;background:rgba(255,255,255,.97);box-shadow:0 22px 70px rgba(15,23,42,.16);text-align:center}
+.login-logo{width:74px;height:74px;object-fit:contain;border-radius:18px;margin-bottom:10px}
+.login-kicker{color:#2563eb;font-size:10px;font-weight:900;letter-spacing:1.5px}
+.login-card h1{margin:8px 0 6px;color:#0f172a;font-size:25px}
+.login-subtitle{margin:0 0 22px;color:#64748b;font-size:13px}
+.login-form{text-align:left}
+.login-form label{display:block;margin:12px 0 6px;color:#334155;font-size:12px;font-weight:800}
+.login-form input{width:100%;min-height:46px;box-sizing:border-box;padding:0 13px;border:1px solid #cbd5e1;border-radius:12px;outline:none;background:#fff;color:#0f172a;font-size:14px}
+.login-form input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.login-submit{width:100%;min-height:46px;margin-top:16px;border:0;border-radius:12px;background:#2563eb;color:#fff;font-size:14px;font-weight:900;cursor:pointer}
+.login-submit:hover{background:#1d4ed8}
+.login-error{min-height:18px;margin-top:8px;color:#dc2626;font-size:11px;font-weight:700}
+.login-demo-note{margin-top:18px;color:#94a3b8;font-size:10px}
+body.dark-mode .login-screen{background:radial-gradient(circle at 20% 15%,rgba(37,99,235,.18),transparent 34%),#020617}
+body.dark-mode .login-card{border-color:#1e293b;background:rgba(15,23,42,.97)}
+body.dark-mode .login-card h1{color:#f8fafc}
+body.dark-mode .login-subtitle,body.dark-mode .login-demo-note{color:#94a3b8}
+body.dark-mode .login-form label{color:#cbd5e1}
+body.dark-mode .login-form input{border-color:#334155;background:#0f172a;color:#f8fafc}
+
+
+/* Larger VYOMA logo on the login page */
+#loginScreen .login-logo,
+.login-screen .login-logo {
+  width: 180px !important;
+  height: auto !important;
+  max-width: 70vw;
+}
+
+
+/* GOOGLE LOGIN */
+.login-divider{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:16px 0 12px;
+  color:#94a3b8;
+  font-size:10px;
+  font-weight:900;
+}
+.login-divider::before,
+.login-divider::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:#e2e8f0;
+}
+.login-google-btn,
+.google-login-btn{
+  width:100%;
+  min-height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  border:1px solid #cbd5e1;
+  border-radius:12px;
+  background:#fff;
+  color:#1f2937;
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 1px 2px rgba(15,23,42,.05);
+}
+.google-login-btn:active{
+  transform:translateY(1px);
+}
+.google-login-btn:disabled{
+  opacity:.7;
+  cursor:wait;
+}
+.google-icon{
+  width:22px;
+  height:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 22px;
+}
+.google-icon svg{
+  width:22px;
+  height:22px;
+  display:block;
+}
+.google-login-btn.loading .google-icon{
+  opacity:.55;
+}
+
+
+/* =========================================================
+   FINAL MOBILE LAYOUT FIX
+   Prevents the map cards, GNSS controls and bottom sheet
+   from covering each other on phone-sized screens.
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .app-header {
+    height: 62px !important;
+    padding: 6px 10px !important;
+  }
+
+  .logo {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .brand {
+    gap: 8px !important;
+    min-width: 0;
+  }
+
+  .brand-name {
+    font-size: 18px !important;
+  }
+
+  .brand-subtitle {
+    font-size: 9px !important;
+    margin-top: 3px !important;
+  }
+
+  .header-status {
+    font-size: 9px !important;
+  }
+
+  /* Two compact cards across the top */
+  .navigation-info {
+    top: 72px !important;
+    left: 10px !important;
+    width: calc(50% - 15px) !important;
+    min-height: 62px !important;
+    padding: 9px 11px !important;
+  }
+
+  .nav-speed span {
+    font-size: 24px !important;
+  }
+
+  .nav-heading {
+    font-size: 12px !important;
+  }
+
+  .mode-card {
+    top: 72px !important;
+    left: calc(50% + 5px) !important;
+    right: 10px !important;
+    min-height: 62px !important;
+    padding: 8px 9px !important;
+  }
+
+  .mode-card .mode-icon {
+    width: 27px !important;
+    height: 27px !important;
+  }
+
+  #modeTitle {
+    font-size: 9px !important;
+  }
+
+  .mode-card small {
+    font-size: 7.5px !important;
+  }
+
+  /* Guidance gets its own row; recenter button has its own space */
+  .guidance-card {
+    top: 143px !important;
+    left: 10px !important;
+    right: 64px !important;
+    min-height: 65px !important;
+    padding: 9px 10px !important;
+  }
+
+  .guidance-icon {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  #guidanceInstruction {
+    font-size: 11px !important;
+  }
+
+  #guidanceDistance {
+    font-size: 9px !important;
+  }
+
+  .recenter-button {
+    top: 153px !important;
+    right: 10px !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  /* GNSS controls stay above the bottom sheet */
+  .gnss-controls {
+    top: 218px !important;
+    right: 10px !important;
+    width: 150px !important;
+    gap: 6px !important;
+  }
+
+  .gnss-button {
+    width: 150px !important;
+    min-height: 36px !important;
+    padding: 7px 5px !important;
+    font-size: 7px !important;
+  }
+
+  /* Smaller sheet leaves a clear map area above it */
+  .bottom-sheet {
+    bottom: 67px !important;
+    height: min(420px, 52vh) !important;
+  }
+
+  .bottom-sheet.expanded {
+    height: calc(100vh - 67px) !important;
+  }
+
+  .sheet-content {
+    padding: 0 14px 22px !important;
+  }
+
+  .route-input input {
+    height: 56px !important;
+  }
+
+  .primary-button,
+  .action-button,
+  .secondary-button {
+    min-height: 54px !important;
+    font-size: 15px !important;
+  }
+}
+
+@media (max-width: 430px) {
+
+  .navigation-info {
+    width: calc(50% - 14px) !important;
+  }
+
+  .mode-card {
+    left: calc(50% + 4px) !important;
+    right: 8px !important;
+  }
+
+  .mode-card .mode-icon {
+    display: none !important;
+  }
+
+  .guidance-card {
+    right: 62px !important;
+  }
+
+  .gnss-controls {
+    right: 8px !important;
+    width: 142px !important;
+  }
+
+  .gnss-button {
+    width: 142px !important;
+    font-size: 6.8px !important;
+  }
+}
+
+/* Keep the header logo asset consistent after login */
+.app-header .logo {
+  object-fit: contain !important;
+}
+
+
+/* =========================================================
+   SIH IDR DIAGNOSTICS
+========================================================= */
+
+.sih-section {
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.sih-section-title {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.sih-status-grid,
+.sih-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.sih-status-card,
+.sih-card {
+  border: 1px solid rgba(127, 127, 127, .18);
+  border-radius: 14px;
+  background: rgba(127, 127, 127, .07);
+  padding: 12px;
+}
+
+.sih-status-card span,
+.sih-metric-grid span {
+  display: block;
+  font-size: 9px;
+  letter-spacing: .08em;
+  opacity: .68;
+  margin-bottom: 5px;
+}
+
+.sih-status-card strong,
+.sih-metric-grid strong {
+  display: block;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.sih-card-head {
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.sih-note {
+  margin-top: 9px;
+  font-size: 10px;
+  line-height: 1.45;
+  opacity: .62;
+}
+
+.sih-check-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 7px;
+  font-size: 11px;
+}
+
+.sih-check-grid span {
+  font-weight: 900;
+  margin-right: 6px;
+}
+
+.sih-deploy-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(127, 127, 127, .12);
+  font-size: 11px;
+}
+
+.sih-deploy-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.sih-deploy-row strong {
+  font-size: 9px;
+  letter-spacing: .06em;
+  text-align: right;
+}
+
+@media (min-width: 700px) {
+  .sih-status-grid,
+  .sih-metric-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+
+.sih-validation-lab {
+  border-style: dashed;
+}
+
+.sih-lab-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.sih-lab-controls button {
+  min-height: 38px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+@media (max-width: 420px) {
+  .sih-lab-controls {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =========================================================
+   VYOMA 2.0 — POLISHED APP EXPERIENCE
+   Mobile-first, touch-friendly, clear hierarchy
+========================================================= */
+
+:root{
+  --app-blue:#2563eb;
+  --app-blue-2:#1d4ed8;
+  --app-ink:#0f172a;
+  --app-muted:#64748b;
+  --app-line:rgba(148,163,184,.22);
+  --app-glass:rgba(255,255,255,.92);
+  --app-card:rgba(255,255,255,.97);
+  --app-shadow:0 12px 32px rgba(15,23,42,.14);
+  --app-shadow-lg:0 20px 55px rgba(15,23,42,.20);
+}
+
+/* smoother app feel */
+body{
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overscroll-behavior:none;
+}
+button, input{ -webkit-tap-highlight-color:transparent; }
+button:focus-visible,input:focus-visible{
+  outline:3px solid rgba(37,99,235,.22);
+  outline-offset:2px;
+}
+
+/* Header: quieter, more premium */
+.app-header{
+  height:68px;
+  padding:8px 14px;
+  background:rgba(255,255,255,.90);
+  border-bottom:1px solid rgba(148,163,184,.18);
+  box-shadow:0 4px 20px rgba(15,23,42,.08);
+}
+.logo{
+  width:44px;height:44px;border-radius:12px;
+  box-shadow:0 5px 14px rgba(37,99,235,.13);
+}
+.brand{gap:10px}
+.brand-name{font-size:18px;letter-spacing:.7px}
+.brand-subtitle{font-size:9px;letter-spacing:.35px}
+.header-status{
+  padding:7px 10px;
+  border:1px solid rgba(34,197,94,.16);
+  border-radius:999px;
+  background:rgba(240,253,244,.92);
+  font-size:9px;
+  letter-spacing:.35px;
+}
+.status-dot{width:7px;height:7px;box-shadow:0 0 0 4px rgba(34,197,94,.10)}
+
+/* Navigation HUD */
+.navigation-info,.mode-card{
+  background:rgba(255,255,255,.88);
+  border:1px solid rgba(255,255,255,.72);
+  box-shadow:var(--app-shadow);
+  backdrop-filter:blur(18px) saturate(1.25);
+  -webkit-backdrop-filter:blur(18px) saturate(1.25);
+}
+.navigation-info{
+  top:82px;left:12px;width:185px;padding:12px 14px;border-radius:18px;
+}
+.nav-speed span{font-size:29px;letter-spacing:-.8px}
+.nav-status{font-size:9px;letter-spacing:.25px}
+.mode-card{
+  top:82px;left:208px;right:12px;min-height:54px;padding:8px 11px;border-radius:18px;
+}
+.mode-icon{
+  width:32px;height:32px;border-radius:11px;
+  background:rgba(37,99,235,.09);
+}
+#modeTitle{font-size:10px;letter-spacing:.25px}
+.mode-card small{font-size:8px}
+
+/* Guidance becomes the primary "next action" card */
+.guidance-card{
+  border:1px solid rgba(255,255,255,.75);
+  box-shadow:var(--app-shadow-lg);
+  border-radius:18px;
+  padding:12px 14px;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.guidance-icon{
+  width:38px;height:38px;border-radius:13px;
+  box-shadow:0 5px 14px rgba(37,99,235,.13);
+}
+#guidanceInstruction{font-size:14px;line-height:1.25}
+#guidanceDistance{font-size:10px;margin-top:4px}
+.guidance-road{font-size:9px;margin-top:4px}
+
+/* Floating map controls */
+.floating-button{
+  width:46px;height:46px;border-radius:15px;
+  background:rgba(255,255,255,.94);
+  border:1px solid rgba(255,255,255,.78);
+  box-shadow:var(--app-shadow);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.floating-button:active{transform:scale(.95)}
+
+.recenter-button{
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* GNSS controls: compact segmented controls */
+.gnss-controls{
+  gap:7px;
+}
+.gnss-button{
+  min-height:40px;
+  border-radius:13px;
+  padding:0 11px;
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 8px 22px rgba(15,23,42,.12);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  letter-spacing:.25px;
+}
+.gnss-button:active{transform:scale(.98)}
+.loss-button{
+  background:rgba(239,68,68,.95);
+}
+.restore-button{
+  background:rgba(255,255,255,.94);
+  color:#0f172a;
+}
+
+/* Bottom sheet = app control center */
+.bottom-sheet{
+  bottom:74px;
+  height:min(500px,calc(100vh - 88px));
+  border-radius:24px 24px 0 0;
+  border:1px solid rgba(148,163,184,.18);
+  border-bottom:none;
+  background:rgba(255,255,255,.94);
+  box-shadow:0 -18px 50px rgba(15,23,42,.16);
+  backdrop-filter:blur(22px) saturate(1.15);
+  -webkit-backdrop-filter:blur(22px) saturate(1.15);
+}
+.sheet-handle-area{height:38px}
+.sheet-handle{
+  width:42px;height:4px;background:#cbd5e1;
+}
+.sheet-content{padding:0 16px 30px}
+.panel-title{
+  position:sticky;top:0;z-index:2;
+  padding:3px 0 12px;
+  margin-bottom:8px;
+  background:linear-gradient(var(--app-card) 82%,rgba(255,255,255,0));
+  font-size:18px;
+}
+.panel-title .ui-icon{
+  width:21px;height:21px;
+}
+
+/* Inputs feel like native app fields */
+.route-input{margin-bottom:12px}
+.route-input label{
+  margin:0 0 6px 2px;
+  font-size:10px;
+  letter-spacing:.25px;
+}
+.route-input input{
+  height:56px;
+  padding:0 16px;
+  border:1px solid #e2e8f0;
+  border-radius:16px;
+  background:#f8fafc;
+  font-size:14px;
+  transition:.18s ease;
+}
+.route-input input::placeholder{color:#94a3b8}
+.route-input input:focus{
+  background:#fff;
+  border-color:rgba(37,99,235,.65);
+  box-shadow:0 0 0 4px rgba(37,99,235,.10);
+}
+.small-action{
+  width:56px;border-radius:16px;
+  background:#eff6ff;
+}
+
+/* Clear primary action hierarchy */
+.primary-button,.action-button,.secondary-button{
+  min-height:56px;
+  border-radius:16px;
+  font-size:15px;
+  letter-spacing:.05px;
+  transition:transform .15s ease,box-shadow .15s ease,opacity .15s ease;
+}
+.primary-button{
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  box-shadow:0 9px 22px rgba(37,99,235,.24);
+}
+.action-button{
+  background:#0f172a;
+  box-shadow:0 7px 18px rgba(15,23,42,.16);
+}
+.prototype-action{
+  background:linear-gradient(135deg,#7c3aed,#6d28d9);
+  box-shadow:0 8px 20px rgba(124,58,237,.20);
+}
+.secondary-button{
+  background:#f1f5f9;
+  color:#334155;
+}
+.primary-button:hover,.action-button:hover,.prototype-action:hover{filter:brightness(1.03)}
+.primary-button:active,.action-button:active,.secondary-button:active{transform:scale(.985);box-shadow:none}
+
+/* Make system feedback look intentional */
+.system-status,.route-info{
+  border:1px solid var(--app-line);
+  background:#f8fafc;
+  border-radius:14px;
+  line-height:1.45;
+}
+.system-status{padding:11px 13px}
+.route-info{padding:13px}
+
+/* Route cards */
+.route-stats{gap:9px}
+.stat-box{
+  padding:13px 11px;
+  border:1px solid #e2e8f0;
+  border-radius:15px;
+  background:#fff;
+  box-shadow:0 3px 12px rgba(15,23,42,.04);
+}
+.stat-box span{font-size:8px;letter-spacing:.35px;text-transform:uppercase}
+.stat-box strong{font-size:14px}
+
+/* AI cards */
+.ai-grid{gap:9px}
+.ai-metric,.sih-status-card{
+  border-radius:15px!important;
+  border:1px solid #e2e8f0!important;
+  box-shadow:0 3px 12px rgba(15,23,42,.04);
+  background:#fff!important;
+}
+.ai-metric strong{font-size:16px}
+.ai-explanation{
+  border-radius:14px;
+  border:1px solid #dbeafe;
+  background:#eff6ff;
+  padding:12px 13px;
+  line-height:1.5;
+}
+
+/* Settings: turn native checkboxes into clean switches */
+.setting-row{
+  min-height:58px;
+  padding:0 13px;
+  margin-bottom:8px;
+  border:1px solid #e2e8f0;
+  border-radius:15px;
+  background:#fff;
+  box-shadow:0 3px 12px rgba(15,23,42,.04);
+}
+.setting-row input{
+  width:44px;height:24px;
+  accent-color:#2563eb;
+}
+
+/* Bottom navigation — thumb-friendly */
+.bottom-nav{
+  height:74px;
+  padding:5px 7px max(5px,env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.96);
+  border-top:1px solid rgba(148,163,184,.18);
+  box-shadow:0 -8px 26px rgba(15,23,42,.10);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.bottom-nav-item{
+  min-height:58px;
+  border-radius:15px;
+  gap:4px;
+  font-size:9px;
+  transition:.16s ease;
+}
+.bottom-nav-item .ui-icon{width:20px;height:20px}
+.bottom-nav-item.active{
+  background:#eff6ff;
+  color:#2563eb;
+}
+.bottom-nav-item:active{transform:scale(.96)}
+
+/* Leaflet controls blend into the app */
+.leaflet-control-zoom{
+  border:none!important;
+  box-shadow:var(--app-shadow)!important;
+  border-radius:14px!important;
+  overflow:hidden;
+}
+.leaflet-control-zoom a{
+  width:40px!important;height:40px!important;
+  line-height:40px!important;
+  background:rgba(255,255,255,.94)!important;
+  color:#0f172a!important;
+  border:none!important;
+  border-bottom:1px solid #e2e8f0!important;
+}
+.leaflet-control-zoom a:last-child{border-bottom:none!important}
+.leaflet-control-attribution{
+  border-radius:8px 0 0 0;
+  padding:2px 5px!important;
+  background:rgba(255,255,255,.75)!important;
+}
+
+/* GNSS loss stays visible but does not obscure the map */
+body.gnss-loss #lossOverlay{
+  background:transparent!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+body.gnss-loss .app-header,
+body.gnss-loss .navigation-info,
+body.gnss-loss .mode-card,
+body.gnss-loss .guidance-card,
+body.gnss-loss .bottom-sheet,
+body.gnss-loss .bottom-nav{
+  border-color:rgba(239,68,68,.42);
+}
+
+/* Dark mode polish */
+body.dark-mode{
+  --app-card:rgba(15,23,42,.96);
+  --app-line:rgba(148,163,184,.16);
+}
+body.dark-mode .app-header,
+body.dark-mode .navigation-info,
+body.dark-mode .mode-card,
+body.dark-mode .guidance-card,
+body.dark-mode .bottom-sheet{
+  background:rgba(15,23,42,.90);
+  border-color:rgba(148,163,184,.16);
+}
+body.dark-mode .bottom-nav{background:rgba(15,23,42,.96);border-color:rgba(148,163,184,.16)}
+body.dark-mode .bottom-nav-item{color:#94a3b8}
+body.dark-mode .bottom-nav-item.active{background:rgba(37,99,235,.16);color:#60a5fa}
+body.dark-mode .route-input input,
+body.dark-mode .stat-box,
+body.dark-mode .ai-metric,
+body.dark-mode .sih-status-card,
+body.dark-mode .setting-row{
+  background:#111c31!important;
+  color:#e5e7eb;
+  border-color:#243247!important;
+}
+body.dark-mode .route-input input::placeholder{color:#64748b}
+body.dark-mode .secondary-button,
+body.dark-mode .system-status,
+body.dark-mode .route-info{
+  background:#172235;
+  color:#cbd5e1;
+}
+body.dark-mode .ai-explanation{background:rgba(30,64,175,.18);border-color:rgba(96,165,250,.20)}
+body.dark-mode .leaflet-control-zoom a{background:#111c31!important;color:#e5e7eb!important;border-color:#243247!important}
+body.dark-mode .header-status{background:rgba(22,101,52,.18);border-color:rgba(74,222,128,.18)}
+
+/* Desktop: keep the map spacious and make the control center a usable side panel */
+@media (min-width:900px){
+  .bottom-sheet{
+    left:18px;right:auto;bottom:18px;
+    width:410px;
+    height:min(610px,calc(100vh - 36px));
+    border-radius:24px;
+    border:1px solid rgba(148,163,184,.18);
+  }
+  .bottom-nav{
+    left:18px;right:auto;bottom:18px;
+    width:410px;height:68px;
+    border-radius:18px;
+    border:1px solid rgba(148,163,184,.18);
+  }
+  .sheet-content{padding-bottom:90px}
+  .gnss-controls{right:20px!important}
+}
+
+/* Small phones: protect space around the map HUD */
+@media (max-width:430px){
+  .app-header{height:62px}
+  .logo{width:40px;height:40px}
+  .navigation-info{top:74px;left:9px;width:164px;padding:10px 12px}
+  .nav-speed span{font-size:25px}
+  .mode-card{top:74px;left:181px;right:9px}
+  .guidance-card{top:137px;left:9px;right:157px}
+  .recenter-button{top:137px;right:9px}
+  .gnss-controls{top:218px!important;right:8px!important}
+  .gnss-button{min-height:38px!important}
+  .bottom-sheet{bottom:74px;height:min(500px,calc(100vh - 78px))}
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    transition-duration:.01ms!important;
+    scroll-behavior:auto!important;
+  }
+}
+
+
+/* =========================================================
+   VYOMA — PROFESSIONAL APP UI PASS
+   Layered on top of the existing functional styles.
+========================================================= */
+
+:root{
+  --app-bg:#f4f7fb;
+  --card:#ffffff;
+  --card-2:#f8fafc;
+  --ink:#0f172a;
+  --muted-2:#94a3b8;
+  --line-2:#dbe3ee;
+  --brand:#2563eb;
+  --brand-2:#1d4ed8;
+  --brand-soft:#eff6ff;
+  --success-2:#16a34a;
+  --warning-2:#f59e0b;
+  --danger-2:#dc2626;
+  --radius-xl:24px;
+  --radius-lg:18px;
+  --radius-md:14px;
+  --shadow-soft:0 10px 30px rgba(15,23,42,.10);
+  --shadow-float:0 16px 42px rgba(15,23,42,.16);
+}
+
+*{box-sizing:border-box}
+button,input{font:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible,input:focus-visible{
+  outline:3px solid rgba(37,99,235,.25);
+  outline-offset:2px;
+}
+
+/* Login */
+.login-screen{
+  background:
+    radial-gradient(circle at 20% 10%,rgba(37,99,235,.12),transparent 35%),
+    radial-gradient(circle at 90% 90%,rgba(14,165,233,.10),transparent 32%),
+    #f8fafc;
+}
+.login-card{
+  border:1px solid rgba(148,163,184,.20)!important;
+  border-radius:28px!important;
+  box-shadow:0 28px 80px rgba(15,23,42,.14)!important;
+  padding:34px!important;
+}
+.login-kicker{
+  letter-spacing:.14em!important;
+  font-weight:800!important;
+  color:#2563eb!important;
+}
+.login-form input{
+  height:50px!important;
+  border-radius:13px!important;
+  border:1px solid #d8e1ec!important;
+  background:#f8fafc!important;
+  padding:0 15px!important;
+  transition:.18s ease;
+}
+.login-form input:focus{
+  background:#fff!important;
+  border-color:#60a5fa!important;
+  box-shadow:0 0 0 4px rgba(37,99,235,.09);
+}
+.login-submit,.google-login-btn{
+  min-height:50px!important;
+  border-radius:13px!important;
+  font-weight:750!important;
+}
+
+/* Map foundation */
+#map{background:#e9eef5}
+.leaflet-control-zoom{
+  border:0!important;
+  box-shadow:var(--shadow-soft)!important;
+  border-radius:14px!important;
+  overflow:hidden;
+}
+.leaflet-control-zoom a{
+  width:42px!important;height:42px!important;line-height:42px!important;
+  border:0!important;
+  color:#0f172a!important;
+  background:rgba(255,255,255,.96)!important;
+}
+.leaflet-control-zoom a:hover{background:#eff6ff!important;color:#2563eb!important}
+
+/* Header: compact navigation app bar */
+.app-header{
+  top:14px!important;
+  left:14px!important;
+  right:14px!important;
+  width:auto!important;
+  min-height:62px!important;
+  padding:10px 12px 10px 14px!important;
+  border:1px solid rgba(255,255,255,.72)!important;
+  border-radius:20px!important;
+  background:rgba(255,255,255,.88)!important;
+  box-shadow:var(--shadow-soft)!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+}
+.brand{gap:10px!important}
+.logo{
+  width:42px!important;height:42px!important;
+  border-radius:12px!important;
+  object-fit:cover!important;
+  box-shadow:0 4px 12px rgba(15,23,42,.12);
+}
+.brand-name{font-size:16px!important;font-weight:850!important;letter-spacing:.06em!important}
+.brand-subtitle{font-size:11px!important;color:#64748b!important}
+.header-status{
+  min-height:34px!important;
+  padding:0 11px!important;
+  border-radius:999px!important;
+  background:#f0fdf4!important;
+  color:#166534!important;
+  border:1px solid #bbf7d0!important;
+  font-size:10px!important;
+  font-weight:850!important;
+  letter-spacing:.06em!important;
+}
+.status-dot{box-shadow:0 0 0 4px rgba(34,197,94,.10)!important}
+
+/* Top telemetry: clearer and less dashboard-like */
+.navigation-info{
+  top:90px!important;
+  left:14px!important;
+  right:auto!important;
+  width:min(290px,calc(100vw - 28px))!important;
+  padding:14px 16px!important;
+  border-radius:20px!important;
+  background:rgba(255,255,255,.92)!important;
+  border:1px solid rgba(255,255,255,.78)!important;
+  box-shadow:var(--shadow-soft)!important;
+  backdrop-filter:blur(16px)!important;
+}
+.nav-speed{
+  line-height:1!important;
+  font-weight:850!important;
+}
+.nav-speed span{font-size:30px!important}
+.nav-speed small{font-size:11px!important;font-weight:700!important;color:#64748b!important}
+.nav-heading{font-weight:800!important;color:#334155!important}
+.nav-status{
+  margin-top:10px!important;
+  padding-top:9px!important;
+  border-top:1px solid #e5eaf1!important;
+  font-size:10px!important;
+  letter-spacing:.08em!important;
+  font-weight:850!important;
+  color:#64748b!important;
+}
+
+/* Status/mode card */
+.mode-card{
+  top:202px!important;
+  left:14px!important;
+  right:auto!important;
+  width:min(340px,calc(100vw - 28px))!important;
+  padding:12px!important;
+  gap:11px!important;
+  border-radius:18px!important;
+  border:1px solid rgba(255,255,255,.78)!important;
+  background:rgba(255,255,255,.91)!important;
+  box-shadow:var(--shadow-soft)!important;
+  backdrop-filter:blur(16px)!important;
+}
+.mode-icon{
+  width:38px!important;height:38px!important;
+  border-radius:12px!important;
+  background:var(--brand-soft)!important;
+  color:var(--brand)!important;
+}
+.mode-title,#modeTitle{font-size:12px!important;font-weight:850!important}
+.mode-text small{font-size:11px!important;color:#64748b!important}
+.mode-indicator{
+  padding:6px 9px!important;
+  border-radius:999px!important;
+  background:#eff6ff!important;
+  color:#1d4ed8!important;
+  font-size:9px!important;
+  font-weight:850!important;
+}
+
+/* Guidance = primary action card */
+.guidance-card{
+  top:292px!important;
+  left:14px!important;
+  right:14px!important;
+  width:auto!important;
+  min-height:82px!important;
+  padding:14px!important;
+  border-radius:20px!important;
+  border:1px solid rgba(255,255,255,.78)!important;
+  background:rgba(255,255,255,.95)!important;
+  box-shadow:var(--shadow-float)!important;
+  backdrop-filter:blur(18px)!important;
+}
+.guidance-icon{
+  width:46px!important;height:46px!important;
+  border-radius:14px!important;
+  background:#eff6ff!important;
+  color:#2563eb!important;
+}
+.guidance-content{min-width:0!important}
+#guidanceInstruction{
+  font-size:15px!important;
+  font-weight:800!important;
+  color:#0f172a!important;
+}
+#guidanceDistance{font-size:12px!important;color:#64748b!important;margin-top:3px}
+.guidance-road{
+  margin-top:4px!important;
+  font-size:11px!important;
+  color:#94a3b8!important;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* Floating map action */
+.recenter-button{
+  width:46px!important;height:46px!important;
+  right:16px!important;
+  bottom:calc(31vh + 86px)!important;
+  border:1px solid rgba(255,255,255,.9)!important;
+  border-radius:15px!important;
+  background:rgba(255,255,255,.96)!important;
+  color:#1e40af!important;
+  box-shadow:var(--shadow-float)!important;
+}
+.recenter-button:hover{transform:translateY(-1px);background:#eff6ff!important}
+
+/* GNSS controls: turn into a compact status/action pair */
+.gnss-controls{
+  left:14px!important;right:14px!important;
+  bottom:calc(31vh + 14px)!important;
+  gap:8px!important;
+  z-index:800!important;
+}
+.gnss-button{
+  min-height:42px!important;
+  border-radius:13px!important;
+  padding:0 12px!important;
+  border:1px solid rgba(255,255,255,.9)!important;
+  box-shadow:0 8px 22px rgba(15,23,42,.12)!important;
+  font-size:10px!important;
+  font-weight:850!important;
+  letter-spacing:.04em!important;
+}
+.loss-button{background:#fff7ed!important;color:#c2410c!important;border-color:#fed7aa!important}
+.restore-button{background:#f0fdf4!important;color:#15803d!important;border-color:#bbf7d0!important}
+.gnss-button:active{transform:scale(.98)}
+
+/* Bottom sheet: app-like drawer */
+.bottom-sheet{
+  left:0!important;right:0!important;
+  bottom:0!important;
+  border-radius:28px 28px 0 0!important;
+  border:1px solid rgba(148,163,184,.16)!important;
+  background:rgba(255,255,255,.96)!important;
+  box-shadow:0 -18px 55px rgba(15,23,42,.16)!important;
+  backdrop-filter:blur(20px)!important;
+  -webkit-backdrop-filter:blur(20px)!important;
+}
+.sheet-handle-area{
+  padding:9px 0 5px!important;
+}
+.sheet-handle{
+  width:42px!important;height:4px!important;
+  border-radius:999px!important;
+  background:#cbd5e1!important;
+}
+.sheet-content{padding:4px 16px 92px!important}
+.panel-title{
+  font-size:18px!important;
+  font-weight:850!important;
+  letter-spacing:-.02em!important;
+  margin-bottom:16px!important;
+}
+.panel-title .ui-icon{color:#2563eb!important}
+
+/* Inputs */
+.route-input{margin-bottom:12px!important}
+.route-input label{
+  display:block!important;
+  margin:0 0 6px!important;
+  font-size:11px!important;
+  font-weight:800!important;
+  color:#64748b!important;
+}
+.route-input input{
+  width:100%!important;
+  height:50px!important;
+  border-radius:14px!important;
+  border:1px solid #dbe3ee!important;
+  background:#f8fafc!important;
+  padding:0 14px!important;
+  color:#0f172a!important;
+  transition:.18s ease;
+}
+.route-input input:focus{
+  background:#fff!important;
+  border-color:#60a5fa!important;
+  box-shadow:0 0 0 4px rgba(37,99,235,.08)!important;
+}
+.input-row{gap:8px!important}
+.small-action{
+  width:50px!important;height:50px!important;
+  border-radius:14px!important;
+  border:1px solid #dbe3ee!important;
+  background:#eff6ff!important;
+  color:#2563eb!important;
+}
+
+/* Main actions */
+.primary-button,.action-button,.prototype-action,.secondary-button{
+  width:100%!important;
+  min-height:50px!important;
+  border-radius:14px!important;
+  font-weight:800!important;
+  letter-spacing:.01em!important;
+  margin-top:8px!important;
+  transition:transform .16s ease,box-shadow .16s ease,background .16s ease!important;
+}
+.primary-button{
+  background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;
+  box-shadow:0 10px 20px rgba(37,99,235,.22)!important;
+}
+.primary-button:hover,.action-button:hover,.prototype-action:hover{
+  transform:translateY(-1px)!important;
+}
+.action-button{background:#0f172a!important;color:#fff!important}
+.prototype-action{
+  background:#eff6ff!important;
+  color:#1d4ed8!important;
+  border:1px solid #bfdbfe!important;
+  box-shadow:none!important;
+}
+.secondary-button{
+  background:#f8fafc!important;
+  color:#475569!important;
+  border:1px solid #dbe3ee!important;
+}
+.system-status,.ai-system-status{
+  margin-top:12px!important;
+  padding:10px 12px!important;
+  border-radius:12px!important;
+  background:#f8fafc!important;
+  border:1px solid #e5eaf1!important;
+  color:#64748b!important;
+  font-size:11px!important;
+}
+
+/* Route stats */
+.route-stats{
+  display:grid!important;
+  grid-template-columns:repeat(3,1fr)!important;
+  gap:8px!important;
+}
+.stat-box{
+  padding:13px 10px!important;
+  border-radius:15px!important;
+  background:#f8fafc!important;
+  border:1px solid #e6ebf2!important;
+}
+.stat-box span{font-size:9px!important;color:#94a3b8!important;font-weight:800!important}
+.stat-box strong{display:block!important;margin-top:4px!important;font-size:14px!important;color:#0f172a!important}
+
+/* AI cards */
+.ai-grid{gap:8px!important}
+.ai-metric,.sih-status-card,.sih-card,.imu-grid>div{
+  border:1px solid #e5eaf1!important;
+  border-radius:15px!important;
+  background:#f8fafc!important;
+}
+.ai-metric{padding:13px!important}
+.ai-metric span,.sih-metric-grid span,.imu-grid span{
+  color:#94a3b8!important;
+  font-size:9px!important;
+  font-weight:850!important;
+  letter-spacing:.04em!important;
+}
+.ai-metric strong{font-size:14px!important;margin-top:5px!important}
+.processing-bar{height:6px!important;border-radius:999px!important;background:#e8eef6!important;overflow:hidden!important}
+.processing-fill{border-radius:999px!important;background:linear-gradient(90deg,#2563eb,#38bdf8)!important}
+.ai-explanation,.sih-note{
+  border-radius:13px!important;
+  background:#f8fafc!important;
+  border:1px solid #e7edf4!important;
+  color:#64748b!important;
+  font-size:11px!important;
+  line-height:1.55!important;
+}
+.sih-section-title{
+  font-size:11px!important;
+  color:#2563eb!important;
+  letter-spacing:.08em!important;
+  font-weight:900!important;
+}
+.sih-card{padding:14px!important;background:#fff!important}
+.sih-card-head{font-size:12px!important;font-weight:850!important;color:#334155!important;margin-bottom:10px!important}
+.sih-status-grid,.sih-metric-grid,.sih-check-grid{gap:8px!important}
+.sih-status-card,.sih-metric-grid>div,.sih-check-grid>div{padding:10px!important}
+.sih-deploy-row{
+  padding:10px 0!important;
+  border-bottom:1px solid #edf1f5!important;
+  font-size:11px!important;
+}
+.sih-deploy-row:last-child{border-bottom:0}
+.secondary-btn{
+  min-height:42px!important;
+  border-radius:12px!important;
+  border:1px solid #cbd5e1!important;
+  background:#fff!important;
+  color:#334155!important;
+  font-weight:800!important;
+}
+
+/* IMU */
+.sub-title{
+  font-size:12px!important;
+  font-weight:850!important;
+  color:#334155!important;
+}
+.imu-status{
+  display:inline-flex!important;
+  margin:8px 0!important;
+  padding:5px 9px!important;
+  border-radius:999px!important;
+  background:#f1f5f9!important;
+  color:#64748b!important;
+  font-size:9px!important;
+  font-weight:850!important;
+}
+.imu-grid{gap:8px!important}
+.imu-grid>div{padding:10px!important}
+.imu-grid strong{font-size:13px!important;display:block;margin-top:4px}
+
+/* Settings */
+.setting-row{
+  min-height:58px!important;
+  padding:0 2px!important;
+  border-bottom:1px solid #edf1f5!important;
+  font-size:13px!important;
+  font-weight:700!important;
+}
+.setting-row:last-child{border-bottom:0}
+.setting-row input{
+  appearance:none;
+  width:46px!important;height:26px!important;
+  border-radius:999px!important;
+  background:#cbd5e1!important;
+  position:relative;
+  transition:.18s ease;
+}
+.setting-row input::after{
+  content:"";
+  position:absolute;top:3px;left:3px;
+  width:20px;height:20px;border-radius:50%;
+  background:#fff;
+  box-shadow:0 2px 5px rgba(15,23,42,.18);
+  transition:.18s ease;
+}
+.setting-row input:checked{background:#2563eb!important}
+.setting-row input:checked::after{transform:translateX(20px)}
+
+/* Bottom nav */
+.bottom-nav{
+  left:10px!important;right:10px!important;
+  bottom:10px!important;
+  height:68px!important;
+  padding:6px!important;
+  border:1px solid rgba(255,255,255,.9)!important;
+  border-radius:21px!important;
+  background:rgba(255,255,255,.94)!important;
+  box-shadow:0 14px 40px rgba(15,23,42,.16)!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+  z-index:1200!important;
+}
+.bottom-nav-item{
+  border-radius:15px!important;
+  color:#94a3b8!important;
+  gap:3px!important;
+  font-size:10px!important;
+  font-weight:800!important;
+}
+.bottom-nav-item.active{
+  color:#2563eb!important;
+  background:#eff6ff!important;
+}
+.bottom-nav-item .ui-icon{width:19px!important;height:19px!important}
+
+/* GNSS loss should communicate state without obscuring navigation */
+#lossOverlay{
+  background:rgba(220,38,38,.04)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  pointer-events:none!important;
+}
+body.gnss-loss .header-status{
+  background:#fff7ed!important;
+  color:#c2410c!important;
+  border-color:#fed7aa!important;
+}
+body.gnss-loss .status-dot{
+  background:#f97316!important;
+  box-shadow:0 0 0 4px rgba(249,115,22,.12)!important;
+}
+body.gnss-loss .mode-indicator{
+  background:#fff7ed!important;
+  color:#c2410c!important;
+}
+
+/* Desktop: keep the map dominant, drawer as a professional side panel */
+@media (min-width:900px){
+  .app-header{left:24px!important;right:24px!important;top:20px!important}
+  .navigation-info{left:24px!important;top:96px!important}
+  .mode-card{left:24px!important;top:210px!important}
+  .guidance-card{
+    left:24px!important;right:auto!important;
+    width:390px!important;top:305px!important;
+  }
+  .gnss-controls{left:24px!important;right:auto!important;bottom:28px!important}
+  .recenter-button{right:410px!important;bottom:28px!important}
+  .bottom-sheet{
+    top:0!important;right:0!important;left:auto!important;bottom:0!important;
+    width:410px!important;height:100%!important;
+    border-radius:28px 0 0 28px!important;
+  }
+  .sheet-content{padding:10px 18px 30px!important}
+  .sheet-handle-area{display:none!important}
+  .bottom-nav{left:auto!important;right:24px!important;bottom:22px!important;width:374px!important}
+}
+
+/* Small phones */
+@media (max-width:380px){
+  .app-header{left:9px!important;right:9px!important}
+  .navigation-info{left:9px!important;width:calc(100vw - 18px)!important}
+  .mode-card{left:9px!important;width:calc(100vw - 18px)!important}
+  .guidance-card{left:9px!important;right:9px!important}
+  .gnss-controls{left:9px!important;right:9px!important}
+  .bottom-nav{left:7px!important;right:7px!important}
+  .bottom-nav-item{font-size:9px!important}
+}
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    scroll-behavior:auto!important;
+    transition-duration:.01ms!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+  }
+}
+
+/* =========================================================
+   VYOMA FINAL UI FIX — MAP-FIRST MOBILE + LANDSCAPE + THEME
+   ========================================================= */
+
+/* Mobile: keep the map visible; controls float without stacking over it. */
+@media (max-width: 899px){
+  #map{z-index:1!important}
+
+  .app-header{
+    top:10px!important; left:10px!important; right:10px!important;
+    min-height:58px!important; padding:8px 10px!important;
+    border-radius:18px!important;
+  }
+
+  .navigation-info{
+    top:78px!important; left:10px!important;
+    width:calc(100vw - 20px)!important;
+    padding:11px 14px!important; border-radius:17px!important;
+  }
+  .nav-info-main{display:flex!important;align-items:center!important;justify-content:space-between!important}
+  .nav-speed span{font-size:28px!important}
+  .nav-status{margin-top:7px!important;padding-top:7px!important}
+
+  .mode-card{
+    top:158px!important; left:10px!important; right:10px!important;
+    width:auto!important; min-height:54px!important;
+    padding:9px 11px!important; border-radius:16px!important;
+  }
+  .mode-icon{width:34px!important;height:34px!important}
+  .mode-indicator{padding:5px 8px!important}
+
+  /* Guidance sits near the bottom of the map, not across the middle. */
+  .guidance-card{
+    top:auto!important; bottom:88px!important;
+    left:10px!important; right:10px!important;
+    width:auto!important; min-height:68px!important;
+    padding:10px 12px!important; border-radius:17px!important;
+    z-index:850!important;
+  }
+  .guidance-icon{width:40px!important;height:40px!important;border-radius:12px!important}
+  #guidanceInstruction{font-size:13px!important}
+  #guidanceDistance{font-size:10px!important}
+
+  .recenter-button{
+    right:12px!important; bottom:166px!important;
+    width:42px!important;height:42px!important;
+  }
+
+  .gnss-controls{
+    left:10px!important; right:auto!important;
+    bottom:166px!important; z-index:860!important;
+  }
+  .gnss-button{min-height:38px!important;font-size:9px!important;padding:0 10px!important}
+
+  /* Drawer is hidden by default, so it never steals the map. */
+  .bottom-sheet{
+    bottom:76px!important;
+    height:min(390px,calc(100vh - 94px))!important;
+    border-radius:24px!important;
+    z-index:1100!important;
+  }
+  .bottom-sheet.hidden-sheet{transform:translateY(calc(100% + 90px))!important}
+
+  .bottom-nav{
+    left:8px!important;right:8px!important;bottom:8px!important;
+    height:64px!important;z-index:1200!important;
+  }
+
+  /* Prevent controls from becoming wider than the phone. */
+  .sheet-content{overflow-y:auto!important;overscroll-behavior:contain!important}
+}
+
+/* Landscape phones/tablets: use a genuine map-first side-panel layout. */
+@media (orientation:landscape) and (min-width:600px) and (max-width:1199px){
+  .app-header{top:10px!important;left:14px!important;right:14px!important}
+  .navigation-info{top:82px!important;left:14px!important;width:280px!important}
+  .mode-card{top:190px!important;left:14px!important;width:300px!important}
+  .guidance-card{top:auto!important;bottom:18px!important;left:14px!important;width:330px!important;right:auto!important}
+  .gnss-controls{left:360px!important;right:auto!important;bottom:18px!important}
+  .recenter-button{right:24px!important;bottom:18px!important}
+
+  .bottom-sheet{
+    top:10px!important;right:10px!important;left:auto!important;bottom:10px!important;
+    width:360px!important;height:calc(100vh - 20px)!important;
+    border-radius:24px!important;
+  }
+  .bottom-nav{
+    left:auto!important;right:24px!important;bottom:22px!important;
+    width:330px!important;height:58px!important;
+  }
+}
+
+/* Wide screens: map dominates; controls become a clean right drawer. */
+@media (min-width:1200px){
+  .app-header{left:24px!important;right:24px!important;top:18px!important}
+  .navigation-info{left:24px!important;top:94px!important;width:300px!important}
+  .mode-card{left:24px!important;top:205px!important;width:340px!important}
+  .guidance-card{left:24px!important;top:auto!important;bottom:24px!important;width:390px!important;right:auto!important}
+  .bottom-sheet{
+    top:14px!important;right:14px!important;left:auto!important;bottom:14px!important;
+    width:390px!important;height:calc(100vh - 28px)!important;
+    border-radius:26px!important;
+  }
+  .bottom-nav{left:auto!important;right:30px!important;bottom:30px!important;width:350px!important}
+}
+
+/* Strong, complete dark theme — applies to the actual controls too. */
+body.dark-mode{
+  --surface:#0b1220!important;
+  --surface-2:#111c31!important;
+  --text:#f8fafc!important;
+  --muted:#94a3b8!important;
+  background:#020617!important;
+  color:#f8fafc!important;
+}
+body.dark-mode .app-header,
+body.dark-mode .navigation-info,
+body.dark-mode .mode-card,
+body.dark-mode .guidance-card,
+body.dark-mode .bottom-sheet,
+body.dark-mode .bottom-nav{
+  background:rgba(11,18,32,.94)!important;
+  color:#f8fafc!important;
+  border-color:rgba(148,163,184,.18)!important;
+}
+body.dark-mode .brand-subtitle,
+body.dark-mode .nav-speed small,
+body.dark-mode .nav-heading,
+body.dark-mode .nav-status,
+body.dark-mode .mode-text small,
+body.dark-mode #guidanceDistance,
+body.dark-mode .guidance-road,
+body.dark-mode .route-input label,
+body.dark-mode .panel-title,
+body.dark-mode .setting-row,
+body.dark-mode .sub-title{
+  color:#94a3b8!important;
+}
+body.dark-mode #guidanceInstruction,
+body.dark-mode #modeTitle,
+body.dark-mode .panel-title,
+body.dark-mode .stat-box strong,
+body.dark-mode .ai-metric strong,
+body.dark-mode .imu-grid strong{
+  color:#f8fafc!important;
+}
+body.dark-mode .nav-status{border-color:#263449!important}
+body.dark-mode .mode-icon,
+body.dark-mode .guidance-icon,
+body.dark-mode .small-action{background:rgba(37,99,235,.18)!important;color:#60a5fa!important;border-color:#29466f!important}
+body.dark-mode .route-input input,
+body.dark-mode .stat-box,
+body.dark-mode .ai-metric,
+body.dark-mode .sih-status-card,
+body.dark-mode .sih-card,
+body.dark-mode .sih-metric-grid>div,
+body.dark-mode .sih-check-grid>div,
+body.dark-mode .imu-grid>div,
+body.dark-mode .system-status,
+body.dark-mode .ai-system-status,
+body.dark-mode .ai-explanation,
+body.dark-mode .sih-note,
+body.dark-mode .secondary-button{
+  background:#111c31!important;
+  color:#e5e7eb!important;
+  border-color:#263449!important;
+}
+body.dark-mode .route-input input{box-shadow:none!important}
+body.dark-mode .route-input input::placeholder{color:#64748b!important}
+body.dark-mode .primary-button{background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;color:#fff!important}
+body.dark-mode .action-button{background:#e2e8f0!important;color:#0f172a!important}
+body.dark-mode .prototype-action{background:rgba(37,99,235,.16)!important;color:#93c5fd!important;border-color:#31558a!important}
+body.dark-mode .secondary-button{color:#cbd5e1!important}
+body.dark-mode .setting-row{border-color:#263449!important}
+body.dark-mode .leaflet-control-zoom a{background:#0f172a!important;color:#e2e8f0!important}
+body.dark-mode .bottom-nav-item{color:#94a3b8!important}
+body.dark-mode .bottom-nav-item.active{background:rgba(37,99,235,.18)!important;color:#60a5fa!important}
+body.dark-mode .sheet-handle{background:#475569!important}
+
+/* Avoid horizontal scrolling caused by wide panels. */
+html,body,#app{max-width:100%;overflow-x:hidden!important}
+
+/* =========================================================
+   VYOMA — MOBILE TOP STATUS PAIR
+   Keep ONLY the Speed and GNSS Lost cards side-by-side.
+   ========================================================= */
+@media (max-width: 899px){
+  .navigation-info{
+    top:78px!important;
+    left:10px!important;
+    right:auto!important;
+    width:calc(50vw - 15px)!important;
+    min-height:88px!important;
+    padding:12px 13px!important;
+    border-radius:17px!important;
+  }
+
+  .navigation-info .nav-info-main{
+    min-width:0!important;
+  }
+
+  .navigation-info .nav-speed span{
+    font-size:27px!important;
+  }
+
+  .navigation-info .nav-speed small{
+    font-size:10px!important;
+  }
+
+  .navigation-info .nav-heading{
+    font-size:13px!important;
+    white-space:nowrap!important;
+  }
+
+  .navigation-info .nav-status{
+    margin-top:7px!important;
+    padding-top:7px!important;
+    font-size:9px!important;
+    white-space:nowrap!important;
+  }
+
+  .mode-card{
+    top:78px!important;
+    left:calc(50vw + 5px)!important;
+    right:10px!important;
+    width:auto!important;
+    min-height:88px!important;
+    height:88px!important;
+    padding:10px 11px!important;
+    gap:8px!important;
+    border-radius:17px!important;
+  }
+
+  .mode-card .mode-icon{
+    width:30px!important;
+    height:30px!important;
+    min-width:30px!important;
+    border-radius:10px!important;
+  }
+
+  .mode-card .mode-text{
+    min-width:0!important;
+    overflow:hidden!important;
+  }
+
+  .mode-card #modeTitle{
+    font-size:10px!important;
+    line-height:1.15!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  .mode-card #modeSubtitle{
+    display:block!important;
+    margin-top:4px!important;
+    font-size:9px!important;
+    line-height:1.15!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  .mode-card .mode-indicator{
+    display:none!important;
+  }
+}
+
+/* Extra-small phones: preserve the two-card layout without overflow. */
+@media (max-width:380px){
+  .navigation-info{
+    left:8px!important;
+    width:calc(50vw - 12px)!important;
+    padding-left:10px!important;
+    padding-right:10px!important;
+  }
+
+  .mode-card{
+    left:calc(50vw + 4px)!important;
+    right:8px!important;
+    padding-left:9px!important;
+    padding-right:9px!important;
+  }
+
+  .mode-card .mode-icon{
+    width:27px!important;
+    height:27px!important;
+    min-width:27px!important;
+  }
+}
+
+/* ===== AI / DR USER PANEL ===== */
+.ai-dr-user-panel{
+  width:min(100%, 980px);
+  margin:16px auto 110px;
+  padding:18px;
+  border:1px solid var(--border, rgba(120,140,180,.22));
+  border-radius:24px;
+  background:var(--panel, rgba(16,23,40,.88));
+  box-shadow:0 16px 45px rgba(0,0,0,.14);
+}
+.ai-dr-header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}
+.ai-dr-header h2{margin:3px 0 2px;font-size:20px}
+.ai-dr-header p{margin:0;opacity:.68;font-size:12px}
+.ai-dr-header .eyebrow{font-size:10px;letter-spacing:.12em;font-weight:800;opacity:.62}
+.ai-dr-pill{padding:7px 10px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.08em;background:rgba(45,212,191,.12);color:#2dd4bf;border:1px solid rgba(45,212,191,.24)}
+.ai-dr-status-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ai-dr-card{padding:13px;border-radius:16px;background:rgba(127,145,180,.08);border:1px solid rgba(127,145,180,.13);min-width:0}
+.ai-dr-label{display:block;font-size:9px;font-weight:800;letter-spacing:.07em;opacity:.58;margin-bottom:7px}
+.ai-dr-card strong{display:block;font-size:14px}
+.ai-dr-card small{display:block;font-size:10px;opacity:.58;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ai-dr-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin:12px 0;border-radius:16px;overflow:hidden;background:rgba(127,145,180,.13)}
+.ai-dr-metrics div{padding:12px;background:var(--panel, rgba(16,23,40,.9))}
+.ai-dr-metrics span,.ai-dr-secondary span{display:block;font-size:9px;opacity:.58}
+.ai-dr-metrics strong{display:block;margin-top:3px;font-size:15px}
+.ai-dr-process{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;padding:12px;border-radius:15px;background:rgba(70,100,160,.08);font-size:10px;font-weight:750}
+.ai-dr-process span{padding:5px 8px;border-radius:999px;background:rgba(127,145,180,.1)}
+.ai-dr-process span.active{background:rgba(45,212,191,.13);color:#2dd4bf}
+.ai-dr-process i{opacity:.4;font-style:normal}
+.ai-dr-secondary{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:10px}
+.ai-dr-secondary div{padding:10px;border-radius:12px;background:rgba(127,145,180,.06)}
+.ai-dr-secondary strong{display:block;margin-top:3px;font-size:11px}
+.ai-dr-note{margin:12px 2px 0;font-size:9px;opacity:.48}
+@media(max-width:700px){
+  .ai-dr-user-panel{margin:10px 10px 100px;padding:14px;border-radius:20px}
+  .ai-dr-status-grid{grid-template-columns:repeat(2,1fr)}
+  .ai-dr-metrics{grid-template-columns:repeat(2,1fr)}
+  .ai-dr-secondary{grid-template-columns:repeat(3,1fr)}
+  .ai-dr-process{justify-content:flex-start}
+}
+@media(max-width:420px){
+  .ai-dr-secondary{grid-template-columns:repeat(2,1fr)}
+  .ai-dr-header h2{font-size:18px}
+}
+
+/* Real-mode truth labels */
+.ai-dr-note{line-height:1.4}
+
+
+/* VYOMA extended feature controls */
+.vyoma-extended-card { border: 1px solid rgba(61, 181, 196, .28); }
+.vyoma-feature-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.vyoma-feature-actions .secondary-btn { min-height:38px; }
+
+
+/* ===== VOICE ASSISTANT ===== */
+.voice-assistant-card{margin-top:12px;padding:12px 14px;border:1px solid rgba(61,181,196,.28);border-radius:16px;background:rgba(70,100,160,.07)}
+.voice-assistant-heading{display:flex;justify-content:space-between;gap:8px;align-items:center;font-weight:800;font-size:12px;margin-bottom:9px}
+.voice-status{font-size:10px;opacity:.7}
+.voice-assistant-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.voice-assistant-controls select{flex:1;min-width:120px;min-height:38px;border-radius:10px;padding:8px;background:var(--panel,#111827);color:inherit;border:1px solid var(--border,rgba(120,140,180,.3))}
+.voice-assistant-controls button{min-height:38px}
+.voice-transcript{font-size:11px;opacity:.72;margin-top:8px;line-height:1.4}
+.voice-assistant-card.listening{border-color:#2dd4bf;box-shadow:0 0 0 2px rgba(45,212,191,.12)}
+
+
+/* =========================================================
+   ABOUT US
+========================================================= */
+.about-us-button {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  margin-left: 8px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: #fff;
+  border: 2px solid rgba(255,255,255,.9);
+  box-shadow: 0 3px 10px rgba(37,99,235,.28);
+  font-family: Georgia, serif;
+  font-size: 17px;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1;
+  z-index: 1002;
+}
+.about-us-button:focus-visible,
+.about-us-close:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 3px;
+}
+.about-us-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+}
+.about-us-modal[hidden] { display: none; }
+.about-us-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15,23,42,.58);
+  backdrop-filter: blur(5px);
+}
+.about-us-card {
+  position: relative;
+  width: min(100%, 390px);
+  max-height: min(82vh, 590px);
+  overflow-y: auto;
+  padding: 27px 22px 22px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface-solid);
+  color: var(--text);
+  box-shadow: 0 24px 70px rgba(15,23,42,.30);
+  text-align: center;
+}
+.about-us-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--text);
+  font-size: 23px;
+  line-height: 1;
+}
+.about-us-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: white;
+  font-family: Georgia, serif;
+  font-size: 30px;
+  font-style: italic;
+  font-weight: 700;
+}
+.about-us-card h2 {
+  margin: 0 0 7px;
+  font-size: 24px;
+  font-weight: 900;
+}
+.about-us-tagline {
+  margin: 0 auto 15px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 800;
+}
+.about-us-card p {
+  font-size: 13px;
+  line-height: 1.55;
+}
+.about-us-points {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0;
+  text-align: left;
+}
+.about-us-points div {
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+}
+.about-us-points strong,
+.about-us-points span {
+  display: block;
+}
+.about-us-points strong {
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+.about-us-points span {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.about-us-note {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 10px !important;
+}
+
+.voice-guidance-toggle{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--muted-text,#64748b);margin-top:8px}
+.voice-guidance-toggle input{accent-color:#2563eb}
+.gnss-loss .guidance-card{border-color:#f59e0b}
