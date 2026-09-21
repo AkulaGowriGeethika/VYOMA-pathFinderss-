@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: vyoma-api
-    runtime: docker
-    rootDir: backend
-    healthCheckPath: /health
-    plan: free
