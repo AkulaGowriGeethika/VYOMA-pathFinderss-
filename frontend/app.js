@@ -717,11 +717,22 @@ meters / 1000
 /* =========================================================
 GUIDANCE
 ========================================================= */
+let vyomaLastAnnouncedManeuver = null;
+function vyomaAnnounceManeuver(step, distance) {
+if (!step || typeof window.vyomaSpeakGuidance !== "function") return;
+if (!Number.isFinite(distance) || distance > 10 || distance < 2) return;
+const location = step.maneuver?.location || [];
+const key = `${location[0] || ""},${location[1] || ""}:${step.maneuver?.type || ""}:${step.maneuver?.modifier || ""}`;
+if (key === vyomaLastAnnouncedManeuver) return;
+vyomaLastAnnouncedManeuver = key;
+const instruction = maneuverInstruction(step).replace(/\\s+onto\\s+.*$/i, "");
+window.vyomaSpeakGuidance(`${instruction} in ${Math.round(distance)} meters.`);
+}
 function maneuverInstruction(
 step
 ) {
 if (!step) {
-return "Continue ahead";
+return "Continue straight";
 }
 const type =
 step.maneuver?.type || "";
@@ -958,6 +969,7 @@ setGuidanceIcon(
 selectedStep.maneuver?.type,
 selectedStep.maneuver?.modifier || ""
 );
+vyomaAnnounceManeuver(selectedStep, selectedDistance);
 return;
 }
 }
@@ -997,7 +1009,7 @@ next[1]
 currentHeading =
 bearing;
 guidanceInstruction.textContent =
-"Continue ahead";
+"Continue straight";
 guidanceDistance.textContent =
 formatDistance(
 haversineDistance(
@@ -3091,7 +3103,7 @@ if (!$("settingsVoiceToggle")) {
 const wrapper = document.createElement("label");
 wrapper.style.cssText = "display:flex;align-items:center;gap:10px;margin:14px 0;";
 wrapper.innerHTML = `
-<input type="checkbox" id="settingsVoiceToggle" checked>
+<input type="checkbox" id="settingsVoiceToggle">
 <span>Voice Assistance</span>
 `;
 settingsPanel.appendChild(wrapper);
@@ -3100,7 +3112,7 @@ if (!$("signOutBtn")) {
 const button = document.createElement("button");
 button.id = "signOutBtn";
 button.type = "button";
-button.textContent = "■ Sign Out";
+button.textContent = " Sign Out";
 button.style.cssText = "margin-top:12px;";
 settingsPanel.appendChild(button);
 }
@@ -3199,7 +3211,7 @@ let enabled = true;
 const sync = () => {
 const a = document.getElementById("voiceGuidanceToggle");
 const b = document.getElementById("settingsVoiceToggle");
-enabled = b ? !!b.checked : (a ? !!a.checked : true);
+enabled = (a && b) ? (!!a.checked && !!b.checked) : (a ? !!a.checked : (b ? !!b.checked : true));
 window.vyomaVoiceEnabled = enabled;
 if (!enabled && "speechSynthesis" in window) {
 try { window.speechSynthesis.cancel(); } catch (_) {}
