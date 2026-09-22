@@ -1,3 +1,4 @@
+VYOMA – Final Guidance-Only Voice Filter
 /* VYOMA FIREBASE LOGIN GATE */
 (function initVyomaFirebaseLogin(){
 const loginScreen=document.getElementById("loginScreen");
@@ -3239,5 +3240,46 @@ if (!guidanceOnly(text)) return;
 return originalGuidance.call(this, text);
 };
 window.__vyomaGuidanceOnlyGuidanceWrapped = true;
+}
+})();
+/* FINAL VOICE FILTER: allow only maneuver guidance and GNSS lost */
+(function () {
+const originalSpeak = window.speechSynthesis && window.speechSynthesis.speak
+? window.speechSynthesis.speak.bind(window.speechSynthesis)
+: null;
+const blockedVoicePhrases = [
+/route calculated/i,
+/not navigating/i,
+/route ready/i,
+/ready to navigate/i,
+/calculating route/i,
+/calculating navigation/i,
+/route found/i,
+/navigation started/i,
+/starting navigation/i,
+/navigation ready/i,
+/recalculating/i,
+/searching for route/i
+];
+const allowedVoicePhrases = [
+/turn left/i,
+/turn right/i,
+/continue straight/i,
+/continue ahead/i,
+/keep left/i,
+/keep right/i,
+/enter roundabout/i,
+/merge/i,
+/arrive at destination/i,
+/gnss (signal )?lost/i
+];
+if (originalSpeak && window.speechSynthesis) {
+window.speechSynthesis.speak = function (utterance) {
+const message = String(utterance && utterance.text || "").trim();
+if (!message) return;
+if (blockedVoicePhrases.some((pattern) => pattern.test(message))) return;
+if (!allowedVoicePhrases.some((pattern) => pattern.test(message))) return;
+return originalSpeak(utterance);
+};
 }
 })();
