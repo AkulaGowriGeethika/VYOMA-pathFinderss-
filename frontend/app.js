@@ -1117,4 +1117,674 @@ function handleLocationError(
 
   }
 
+} function setVehicleIcon(isLoss) {
+
+  if (!vehicleMarker) return;
+
+  vehicleMarker.setIcon(
+    vehicleIcon(isLoss)
+  );
+
 }
+
+
+/* =========================================================
+   DESTINATION ICON
+========================================================= */
+
+function destinationIcon() {
+
+  return L.divIcon({
+
+    className: "vyoma-vehicle",
+
+    iconSize: [36, 36],
+
+    iconAnchor: [18, 34],
+
+    html: `
+      <div style="
+        width:30px;
+        height:30px;
+        border-radius:50% 50% 50% 0;
+        background:#111827;
+        border:3px solid white;
+        transform:rotate(-45deg);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        box-shadow:0 3px 12px rgba(0,0,0,.25);
+      ">
+        <div style="
+          width:8px;
+          height:8px;
+          border-radius:50%;
+          background:white;
+        "></div>
+      </div>
+    `
+  });
+
+}
+
+
+/* =========================================================
+   MAP DESTINATION SELECTION
+========================================================= */
+
+function setDestinationFromMap(lat, lon) {
+
+  const latitude = Number(lat);
+  const longitude = Number(lon);
+
+  if (
+    !Number.isFinite(latitude) ||
+    !Number.isFinite(longitude)
+  ) {
+    return;
+  }
+
+  const destination = [
+    latitude,
+    longitude
+  ];
+
+  if (toInput) {
+
+    toInput.value =
+      `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+
+  }
+
+  if (destinationMarker) {
+
+    destinationMarker.setLatLng(
+      destination
+    );
+
+  } else {
+
+    destinationMarker = L.marker(
+      destination,
+      {
+        icon: destinationIcon(),
+        title: "Selected destination"
+      }
+    ).addTo(map);
+
+  }
+
+  destinationMarker
+    .bindPopup("Selected destination")
+    .openPopup();
+
+  if (systemStatus) {
+
+    systemStatus.textContent =
+      "Destination selected. Tap Calculate Route to continue.";
+
+  }
+
+  if (routeStatus) {
+
+    routeStatus.textContent =
+      `Destination: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+
+  }
+
+  if (
+    window.innerWidth < 900 &&
+    bottomSheet
+  ) {
+
+    bottomSheet.classList.remove(
+      "hidden-sheet"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   CURRENT LOCATION
+========================================================= */
+
+function getCurrentLocation() {
+
+  return new Promise((resolve, reject) => {
+
+    if (!navigator.geolocation) {
+
+      reject(
+        new Error(
+          "Geolocation is not supported."
+        )
+      );
+
+      return;
+
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+      position => {
+
+        const {
+          latitude,
+          longitude,
+          accuracy,
+          speed,
+          heading
+        } = position.coords;
+
+        const location = {
+          lat: latitude,
+          lon: longitude,
+          accuracy: accuracy,
+          speed: speed,
+          heading: heading,
+          timestamp: position.timestamp
+        };
+
+        resolve(location);
+
+      },
+
+      error => {
+
+        let message =
+          "Unable to get your current location.";
+
+        if (
+          error.code ===
+          error.PERMISSION_DENIED
+        ) {
+
+          message =
+            "Location permission was denied.";
+
+        } else if (
+          error.code ===
+          error.POSITION_UNAVAILABLE
+        ) {
+
+          message =
+            "Current location is unavailable.";
+
+        } else if (
+          error.code ===
+          error.TIMEOUT
+        ) {
+
+          message =
+            "Location request timed out.";
+
+        }
+
+        reject(
+          new Error(message)
+        );
+
+      },
+
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
+      }
+
+    );
+
+  });
+
+}
+
+
+/* =========================================================
+   GEOLOCATION HELPERS
+========================================================= */
+
+function toRadians(degrees) {
+
+  return degrees * Math.PI / 180;
+
+}
+
+
+function toDegrees(radians) {
+
+  return radians * 180 / Math.PI;
+
+}
+
+
+function calculateDistance(
+  lat1,
+  lon1,
+  lat2,
+  lon2
+) {
+
+  const earthRadius = 6371000;
+
+  const differenceLat =
+    toRadians(lat2 - lat1);
+
+  const differenceLon =
+    toRadians(lon2 - lon1);
+
+  const latitude1 =
+    toRadians(lat1);
+
+  const latitude2 =
+    toRadians(lat2);
+
+  const a =
+    Math.sin(differenceLat / 2) *
+    Math.sin(differenceLat / 2) +
+
+    Math.cos(latitude1) *
+    Math.cos(latitude2) *
+
+    Math.sin(differenceLon / 2) *
+    Math.sin(differenceLon / 2);
+
+  const c =
+    2 *
+    Math.atan2(
+      Math.sqrt(a),
+      Math.sqrt(1 - a)
+    );
+
+  return earthRadius * c;
+
+}
+
+
+function calculateBearing(
+  lat1,
+  lon1,
+  lat2,
+  lon2
+) {
+
+  const latitude1 =
+    toRadians(lat1);
+
+  const latitude2 =
+    toRadians(lat2);
+
+  const differenceLon =
+    toRadians(lon2 - lon1);
+
+  const y =
+    Math.sin(differenceLon) *
+    Math.cos(latitude2);
+
+  const x =
+    Math.cos(latitude1) *
+    Math.sin(latitude2) -
+
+    Math.sin(latitude1) *
+    Math.cos(latitude2) *
+    Math.cos(differenceLon);
+
+  const bearing =
+    toDegrees(
+      Math.atan2(y, x)
+    );
+
+  return (
+    bearing + 360
+  ) % 360;
+
+}
+
+
+/* =========================================================
+   FORMAT HELPERS
+========================================================= */
+
+function formatDistance(distanceMeters) {
+
+  if (
+    !Number.isFinite(distanceMeters)
+  ) {
+
+    return "--";
+
+  }
+
+  if (
+    distanceMeters < 1000
+  ) {
+
+    return `${Math.round(distanceMeters)} m`;
+
+  }
+
+  return `${(
+    distanceMeters / 1000
+  ).toFixed(1)} km`;
+
+}
+
+
+function formatDuration(seconds) {
+
+  if (
+    !Number.isFinite(seconds) ||
+    seconds < 0
+  ) {
+
+    return "--";
+
+  }
+
+  const minutes =
+    Math.round(seconds / 60);
+
+  if (
+    minutes < 60
+  ) {
+
+    return `${minutes} min`;
+
+  }
+
+  const hours =
+    Math.floor(minutes / 60);
+
+  const remainingMinutes =
+    minutes % 60;
+
+  return `${hours} hr ${remainingMinutes} min`;
+
+}
+
+
+function formatSpeed(speedMps) {
+
+  if (
+    !Number.isFinite(speedMps)
+  ) {
+
+    return "0 km/h";
+
+  }
+
+  return `${(
+    Math.max(0, speedMps) * 3.6
+  ).toFixed(1)} km/h`;
+
+}
+
+
+/* =========================================================
+   VEHICLE MARKER
+========================================================= */
+
+function updateVehicleMarker(
+  latitude,
+  longitude,
+  isLoss = false
+) {
+
+  if (
+    !map ||
+    !Number.isFinite(latitude) ||
+    !Number.isFinite(longitude)
+  ) {
+
+    return;
+
+  }
+
+  const position = [
+    latitude,
+    longitude
+  ];
+
+  if (vehicleMarker) {
+
+    vehicleMarker.setLatLng(
+      position
+    );
+
+    setVehicleIcon(
+      isLoss
+    );
+
+  } else {
+
+    vehicleMarker = L.marker(
+      position,
+      {
+        icon: vehicleIcon(isLoss),
+        title: "Current vehicle position"
+      }
+    ).addTo(map);
+
+  }
+
+  if (
+    followVehicleEnabled
+  ) {
+
+    if (
+      automaticZoomEnabled
+    ) {
+
+      map.setView(
+        position,
+        Math.max(
+          map.getZoom(),
+          15
+        )
+      );
+
+    } else {
+
+      map.panTo(
+        position
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   LOCATION WATCH
+========================================================= */
+
+function startLocationWatch() {
+
+  if (
+    !navigator.geolocation
+  ) {
+
+    return;
+
+  }
+
+  if (
+    gpsWatchId !== null
+  ) {
+
+    navigator.geolocation.clearWatch(
+      gpsWatchId
+    );
+
+  }
+
+  gpsWatchId =
+    navigator.geolocation.watchPosition(
+
+      position => {
+
+        const {
+          latitude,
+          longitude,
+          accuracy,
+          speed,
+          heading
+        } = position.coords;
+
+        currentPosition = {
+          lat: latitude,
+          lon: longitude,
+          accuracy: accuracy,
+          speed: speed,
+          heading: heading,
+          timestamp: position.timestamp
+        };
+
+        lastRealPosition =
+          currentPosition;
+
+        lastGnssTimestamp =
+          Date.now();
+
+        currentSpeed =
+          Number.isFinite(speed)
+            ? speed
+            : 0;
+
+        currentHeading =
+          Number.isFinite(heading)
+            ? heading
+            : currentHeading;
+
+        updateVehicleMarker(
+          latitude,
+          longitude,
+          false
+        );
+
+        updateLocationUI();
+
+        if (
+          gnssLost
+        ) {
+
+          recoverFromGnssLoss();
+
+        }
+
+      },
+
+      error => {
+
+        handleLocationError(
+          error
+        );
+
+      },
+
+      {
+        enableHighAccuracy: true,
+        maximumAge: 1000,
+        timeout: 10000
+      }
+
+    );
+
+}
+
+
+/* =========================================================
+   LOCATION UI
+========================================================= */
+
+function updateLocationUI() {
+
+  if (
+    speedValue
+  ) {
+
+    speedValue.textContent =
+      formatSpeed(
+        currentSpeed
+      );
+
+  }
+
+  if (
+    headingValue
+  ) {
+
+    headingValue.textContent =
+      `${Math.round(
+        currentHeading
+      )}°`;
+
+  }
+
+  if (
+    systemStatus &&
+    !gnssLost
+  ) {
+
+    systemStatus.textContent =
+      "GPS signal active.";
+
+  }
+
+  if (
+    realImuStatus
+  ) {
+
+    realImuStatus.textContent =
+      "Location updates active";
+
+  }
+
+}
+
+
+function handleLocationError(
+  error
+) {
+
+  if (
+    !error
+  ) {
+
+    return;
+
+  }
+
+  if (
+    error.code ===
+    error.PERMISSION_DENIED
+  ) {
+
+    if (
+      systemStatus
+    ) {
+
+      systemStatus.textContent =
+        "Location permission denied.";
+
+    }
+
+    return;
+
+  }
+
+  if (
+    error.code ===
+    error.POSITION_UNAVAILABLE ||
+    error.code ===
+    error.TIMEOUT
+  ) {
+
+    enterGnssLossMode();
+
+  }
+
+} 
