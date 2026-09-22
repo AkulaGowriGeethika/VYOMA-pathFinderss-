@@ -1,4 +1,3 @@
-VYOMA – Guidance-Only Voice Fix
 /* VYOMA FIREBASE LOGIN GATE */
 (function initVyomaFirebaseLogin(){
 const loginScreen=document.getElementById("loginScreen");
@@ -3210,8 +3209,7 @@ updateVoiceUI();
 VYOMA VOICE FILTER: GUIDANCE + GNSS LOST ONLY
 ========================================================= */
 (function () {
-const allowedGuidance = /\b(turn left|turn right|continue straight|continue ahead|keep left|keep right|enter roundabout|merge|arrive at destination|start navigation|gnss signal lost|gnss lost|dead
-reckoning is active)\b/i;
+const allowedGuidance = /\b(turn left|turn right|continue straight|continue ahead|keep left|keep right|enter roundabout|merge|arrive at destination|gnss signal lost|gnss lost)\b/i;
 function isVoiceEnabled() {
 const toggle = document.getElementById("settingsVoiceToggle") ||
 document.getElementById("voiceGuidanceToggle");
@@ -3220,6 +3218,10 @@ return window.vyomaVoiceEnabled !== false && (!toggle || toggle.checked !== fals
 function guidanceOnly(text) {
 const value = String(text || "").trim();
 if (!value || !isVoiceEnabled()) return false;
+if (/calculating route|calculating navigation|route calculated|navigation started|navigation ready|recalculating|searching for route|route found|starting navigation|dead reckoning is
+active/i.test(value)) {
+return false;
+}
 return allowedGuidance.test(value);
 }
 if (typeof window.vyomaSpeak === "function" && !window.__vyomaGuidanceOnlySpeakWrapped) {
