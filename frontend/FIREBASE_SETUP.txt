@@ -1,0 +1,14 @@
+VYOMA FIREBASE AUTH SETUP
+==========================
+
+1. Open Firebase Console and create/select your VYOMA project.
+2. Authentication -> Sign-in method -> enable Email/Password.
+3. Project settings -> Your apps -> Web app. Copy the Firebase Web SDK config.
+4. Open frontend/firebase-config.js and replace the YOUR_... values with that config.
+5. Authentication -> Users -> Add user. Create the email/password you want for the demo.
+6. Run the frontend over HTTPS (your Cloudflare Quick Tunnel is suitable).
+
+The VYOMA login now uses Firebase signInWithEmailAndPassword.
+The header logo was also fixed to use the logo file that actually exists in this project: logo.png.jpeg.
+
+Do not place a Firebase service-account JSON or private key in the frontend.

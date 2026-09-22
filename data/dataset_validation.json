@@ -1,0 +1,49 @@
+{
+  "file": "Dataset_IoV.xlsx",
+  "rows": 206775,
+  "columns": [
+    "Number of Lanes",
+    "Status of driver",
+    "Nature of environment",
+    "Velocity of vehicle",
+    "Distance between vehicles",
+    "Breaking capability",
+    "Collussion"
+  ],
+  "sample_stats": {
+    "Number of Lanes": {
+      "non_null": 10000,
+      "unique": 2
+    },
+    "Status of driver": {
+      "non_null": 10000,
+      "unique": 2
+    },
+    "Nature of environment": {
+      "non_null": 10000,
+      "unique": 2
+    },
+    "Velocity of vehicle": {
+      "non_null": 10000,
+      "unique": 3
+    },
+    "Distance between vehicles": {
+      "non_null": 10000,
+      "unique": 3
+    },
+    "Breaking capability": {
+      "non_null": 10000,
+      "unique": 2
+    },
+    "Collussion": {
+      "non_null": 10000,
+      "unique": 2
+    }
+  },
+  "status": "IoV collision/classification dataset; not smartphone IMU trajectory/IO-VNBD data.",
+  "cannot_validate": [
+    "IDR drift",
+    "GRU displacement accuracy",
+    "official IO-VNBD benchmarks"
+  ]
+}

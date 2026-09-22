@@ -1,0 +1,82 @@
+{
+  "smartphone_idr": {
+    "software": "implemented",
+    "evidence": "prototype"
+  },
+  "accelerometer_gyro": {
+    "software": "implemented",
+    "evidence": "prototype"
+  },
+  "gru_sequence_estimation": {
+    "software": "implemented",
+    "evidence": "prototype"
+  },
+  "gnss_ins_fusion": {
+    "software": "implemented",
+    "evidence": "prototype"
+  },
+  "gnss_outage_dead_reckoning": {
+    "software": "implemented",
+    "evidence": "prototype"
+  },
+  "gnss_recovery_refusion": {
+    "software": "implemented",
+    "evidence": "prototype"
+  },
+  "pitch_roll_yaw_alignment": {
+    "software": "implemented",
+    "evidence": "prototype"
+  },
+  "ai_speed_estimation": {
+    "software": "implemented",
+    "evidence": "prototype"
+  },
+  "vibration_filter": {
+    "software": "implemented",
+    "evidence": "prototype"
+  },
+  "map_matching": {
+    "software": "implemented",
+    "evidence": "route-constrained prototype"
+  },
+  "nhc": {
+    "software": "implemented",
+    "evidence": "road constraint prototype"
+  },
+  "drift_monitoring": {
+    "software": "implemented",
+    "evidence": "measurement framework"
+  },
+  "10hz_mobile_target": {
+    "software": "configured",
+    "evidence": "performance measurement required"
+  },
+  "200hz_edge_target": {
+    "software": "configured",
+    "evidence": "hardware measurement required"
+  },
+  "iov_dataset": {
+    "software": "integrated",
+    "evidence": "auxiliary safety benchmark"
+  },
+  "io_vnbd_navigation_validation": {
+    "software": "not_validated",
+    "evidence": "correct dataset required"
+  },
+  "drift_lt_10_percent": {
+    "software": "benchmark_ready",
+    "evidence": "real trajectory validation required"
+  },
+  "offline_osm": {
+    "software": "not_fully_packaged",
+    "evidence": "local map data/tiles required"
+  },
+  "production_ukf_hmm": {
+    "software": "not_fully_implemented",
+    "evidence": "advanced filter validation required"
+  },
+  "external_imu_edge_deployment": {
+    "software": "interface_target",
+    "evidence": "hardware validation required"
+  }
+}
