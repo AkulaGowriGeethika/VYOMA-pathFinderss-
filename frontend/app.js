@@ -3368,3 +3368,24 @@ systemStatus.textContent =
  }
  });
 })();
+(() => {
+ "use strict";
+ if (window.__VYOMA_FINAL_VOICE_ONLY_PATCH__) return;
+ window.__VYOMA_FINAL_VOICE_ONLY_PATCH__ = true;
+ const synth = window.speechSynthesis;
+ if (!synth || !synth.speak) return;
+ const originalSpeak = synth.speak.bind(synth);
+ const allowed = /\\b(turn\\s+(left|right)|keep\\s+(left|right)|bear\\s+(left|right)|continue\\s+(straight|ahead)|go\\s+straight|roundabou const blocked = /\\b(destination|latitude|longitude|coordinates?|route|calculat|navigat|not\\s+navigating|route\\s+(ready|found)|starting function voiceOn() {
+ const el = document.querySelector('#voiceAssistance, #voice-assistance, [name="voiceAssistance"], [name="voice-assistance"]');
+ if (el && "checked" in el) return !!el.checked;
+ return window.voiceAssistanceEnabled === true ||
+ window.isVoiceAssistanceEnabled === true ||
+ window.voiceEnabled === true;
+ }
+ synth.speak = function (utterance) {
+ const text = String(utterance && utterance.text || "").replace(/\\s+/g, " ").trim();
+ if (!voiceOn()) return;
+ if (!text || blocked.test(text) || !allowed.test(text)) return;
+ return originalSpeak(utterance);
+ };
+})();
