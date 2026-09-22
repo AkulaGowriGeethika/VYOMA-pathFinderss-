@@ -1,3 +1,4 @@
+VYOMA – Guidance-Only Voice Fix
 /* VYOMA FIREBASE LOGIN GATE */
 (function initVyomaFirebaseLogin(){
 const loginScreen=document.getElementById("loginScreen");
@@ -717,22 +718,11 @@ meters / 1000
 /* =========================================================
 GUIDANCE
 ========================================================= */
-let vyomaLastAnnouncedManeuver = null;
-function vyomaAnnounceManeuver(step, distance) {
-if (!step || typeof window.vyomaSpeakGuidance !== "function") return;
-if (!Number.isFinite(distance) || distance > 10 || distance < 2) return;
-const location = step.maneuver?.location || [];
-const key = `${location[0] || ""},${location[1] || ""}:${step.maneuver?.type || ""}:${step.maneuver?.modifier || ""}`;
-if (key === vyomaLastAnnouncedManeuver) return;
-vyomaLastAnnouncedManeuver = key;
-const instruction = maneuverInstruction(step).replace(/\\s+onto\\s+.*$/i, "");
-window.vyomaSpeakGuidance(`${instruction} in ${Math.round(distance)} meters.`);
-}
 function maneuverInstruction(
 step
 ) {
 if (!step) {
-return "Continue straight";
+return "Continue ahead";
 }
 const type =
 step.maneuver?.type || "";
@@ -969,7 +959,6 @@ setGuidanceIcon(
 selectedStep.maneuver?.type,
 selectedStep.maneuver?.modifier || ""
 );
-vyomaAnnounceManeuver(selectedStep, selectedDistance);
 return;
 }
 }
@@ -1009,7 +998,7 @@ next[1]
 currentHeading =
 bearing;
 guidanceInstruction.textContent =
-"Continue straight";
+"Continue ahead";
 guidanceDistance.textContent =
 formatDistance(
 haversineDistance(
@@ -3092,163 +3081,161 @@ if(event.key === "Escape" && !modal.hidden) closeModal();
 });
 })();
 /* =========================================================
-VYOMA VOICE ASSISTANCE + SIGN OUT
+VYOMA SETTINGS: VOICE ENABLE/DISABLE + FIREBASE SIGN OUT
+Requires these optional HTML IDs:
+- settingsVoiceToggle
+- signOutBtn
 ========================================================= */
-(function initVyomaVoiceAndSignOut() {
-const $ = (id) => document.getElementById(id);
-function ensureSettingsControls() {
-const settingsPanel = $("settingsPanel");
-if (!settingsPanel) return;
-if (!$("settingsVoiceToggle")) {
-const wrapper = document.createElement("label");
-wrapper.style.cssText = "display:flex;align-items:center;gap:10px;margin:14px 0;";
-wrapper.innerHTML = `
-<input type="checkbox" id="settingsVoiceToggle">
-<span>Voice Assistance</span>
-`;
-settingsPanel.appendChild(wrapper);
-}
-if (!$("signOutBtn")) {
-const button = document.createElement("button");
-button.id = "signOutBtn";
-button.type = "button";
-button.textContent = " Sign Out";
-button.style.cssText = "margin-top:12px;";
-settingsPanel.appendChild(button);
-}
-}
-ensureSettingsControls();
-const existingVoiceToggle = $("voiceGuidanceToggle");
-const settingsVoiceToggle = $("settingsVoiceToggle");
-const voiceButton = $("voiceButton");
-const voiceStatus = $("voiceStatus");
-let voiceEnabled = existingVoiceToggle
-? !!existingVoiceToggle.checked
+(function initVyomaSettingsControls() {
+const mainVoiceToggle = document.getElementById("voiceGuidanceToggle");
+const settingsVoiceToggle = document.getElementById("settingsVoiceToggle");
+const signOutBtn = document.getElementById("signOutBtn");
+const voiceButton = document.getElementById("voiceButton");
+const voiceStopButton = document.getElementById("voiceStopButton");
+const voiceStatus = document.getElementById("voiceStatus");
+const voiceTranscript = document.getElementById("voiceTranscript");
+let voiceEnabled = mainVoiceToggle
+? mainVoiceToggle.checked
 : true;
 function updateVoiceUI() {
-const toggles = [$("voiceGuidanceToggle"), $("settingsVoiceToggle")].filter(Boolean);
-toggles.forEach((toggle) => {
-toggle.checked = voiceEnabled;
-});
-if (!voiceEnabled && "speechSynthesis" in window) {
+if (mainVoiceToggle) mainVoiceToggle.checked = voiceEnabled;
+if (settingsVoiceToggle) settingsVoiceToggle.checked = voiceEnabled;
+if (!voiceEnabled) {
+if ("speechSynthesis" in window) {
 window.speechSynthesis.cancel();
 }
+if (voiceStatus) voiceStatus.textContent = "Disabled";
+if (voiceTranscript) {
+voiceTranscript.textContent = "Voice assistance is disabled in Settings.";
+}
 if (voiceButton) {
-voiceButton.disabled = !voiceEnabled;
-voiceButton.setAttribute("aria-disabled", String(!voiceEnabled));
+voiceButton.disabled = true;
+voiceButton.setAttribute("aria-disabled", "true");
 }
-if (voiceStatus) {
-voiceStatus.textContent = voiceEnabled
-? "Voice assistance enabled"
-: "Voice assistance disabled";
+if (voiceStopButton) {
+voiceStopButton.disabled = false;
 }
-const transcript = $("voiceTranscript");
-if (transcript && !voiceEnabled) {
-transcript.textContent = "Voice assistance is disabled.";
+} else {
+if (voiceStatus) voiceStatus.textContent = "Ready";
+if (voiceButton) {
+voiceButton.disabled = false;
+voiceButton.setAttribute("aria-disabled", "false");
 }
-window.vyomaVoiceEnabled = voiceEnabled;
 }
-window.vyomaSetVoiceEnabled = function (enabled) {
-voiceEnabled = !!enabled;
+}
+function setVoiceEnabled(enabled) {
+voiceEnabled = Boolean(enabled);
 updateVoiceUI();
+}
+window.vyomaVoiceEnabled = function () {
+return voiceEnabled;
 };
-[$("voiceGuidanceToggle"), $("settingsVoiceToggle")].forEach((toggle) => {
-if (!toggle) return;
-toggle.addEventListener("change", (event) => {
-voiceEnabled = !!event.target.checked;
-updateVoiceUI();
+window.vyomaSetVoiceEnabled = setVoiceEnabled;
+/*
+Gate spoken output without replacing the existing voice assistant.
+The original voice assistant remains responsible for recognition,
+commands, language selection, and its own UI.
+*/
+if (typeof window.vyomaSpeak === "function") {
+const originalVyomaSpeak = window.vyomaSpeak;
+if (!window.__vyomaSpeakOriginal) {
+window.__vyomaSpeakOriginal = originalVyomaSpeak;
+window.vyomaSpeak = function (text) {
+if (!voiceEnabled) return;
+return window.__vyomaSpeakOriginal(text);
+};
+}
+}
+if (typeof window.vyomaSpeakGuidance === "function") {
+const originalVyomaSpeakGuidance = window.vyomaSpeakGuidance;
+if (!window.__vyomaSpeakGuidanceOriginal) {
+window.__vyomaSpeakGuidanceOriginal = originalVyomaSpeakGuidance;
+window.vyomaSpeakGuidance = function (text) {
+if (!voiceEnabled) return;
+return window.__vyomaSpeakGuidanceOriginal(text);
+};
+}
+}
+if (mainVoiceToggle) {
+mainVoiceToggle.addEventListener("change", () => {
+setVoiceEnabled(mainVoiceToggle.checked);
 });
+}
+if (settingsVoiceToggle) {
+settingsVoiceToggle.addEventListener("change", () => {
+setVoiceEnabled(settingsVoiceToggle.checked);
 });
+}
+/*
+If the original voice assistant has already attached its click
+listener, this capture listener prevents activation when disabled.
+*/
 if (voiceButton) {
 voiceButton.addEventListener("click", (event) => {
 if (!voiceEnabled) {
 event.preventDefault();
 event.stopImmediatePropagation();
+if (voiceStatus) voiceStatus.textContent = "Disabled";
+if (voiceTranscript) {
+voiceTranscript.textContent = "Enable voice assistance in Settings first.";
+}
 }
 }, true);
 }
-function wrapSpeechFunction(name) {
-const original = window[name];
-if (typeof original !== "function" || original.__vyomaVoiceWrapped) return;
-const wrapped = function (...args) {
-if (!voiceEnabled) return;
-return original.apply(this, args);
-};
-wrapped.__vyomaVoiceWrapped = true;
-window[name] = wrapped;
-}
-wrapSpeechFunction("vyomaSpeak");
-wrapSpeechFunction("vyomaSpeakGuidance");
-const signOutBtn = $("signOutBtn");
 if (signOutBtn) {
 signOutBtn.addEventListener("click", async () => {
-if (!window.firebase || !firebase.auth) {
-alert("Firebase authentication is not available.");
-return;
-}
-if (!confirm("Are you sure you want to sign out?")) return;
-const originalText = signOutBtn.textContent;
+const confirmed = window.confirm("Are you sure you want to sign out?");
+if (!confirmed) return;
 signOutBtn.disabled = true;
 signOutBtn.textContent = "Signing out...";
 try {
+if (typeof firebase === "undefined" || !firebase.auth) {
+throw new Error("Firebase Authentication is unavailable.");
+}
+if ("speechSynthesis" in window) {
+window.speechSynthesis.cancel();
+}
 await firebase.auth().signOut();
 } catch (error) {
-console.error("Sign out failed:", error);
-alert(error.message || "Sign out failed. Please try again.");
+console.error("VYOMA sign out failed:", error);
+window.alert("Unable to sign out. Please try again.");
 signOutBtn.disabled = false;
-signOutBtn.textContent = originalText;
+signOutBtn.textContent = "Sign Out";
 }
 });
 }
 updateVoiceUI();
 })();
 /* =========================================================
-HARD VOICE OFF GUARD
-Blocks every browser speech request while assistance is off.
+VYOMA VOICE FILTER: GUIDANCE + GNSS LOST ONLY
 ========================================================= */
-(function hardVoiceOffGuard(){
-let enabled = true;
-const sync = () => {
-const a = document.getElementById("voiceGuidanceToggle");
-const b = document.getElementById("settingsVoiceToggle");
-enabled = (a && b) ? (!!a.checked && !!b.checked) : (a ? !!a.checked : (b ? !!b.checked : true));
-window.vyomaVoiceEnabled = enabled;
-if (!enabled && "speechSynthesis" in window) {
-try { window.speechSynthesis.cancel(); } catch (_) {}
+(function () {
+const allowedGuidance = /\b(turn left|turn right|continue straight|continue ahead|keep left|keep right|enter roundabout|merge|arrive at destination|start navigation|gnss signal lost|gnss lost|dead
+reckoning is active)\b/i;
+function isVoiceEnabled() {
+const toggle = document.getElementById("settingsVoiceToggle") ||
+document.getElementById("voiceGuidanceToggle");
+return window.vyomaVoiceEnabled !== false && (!toggle || toggle.checked !== false);
 }
+function guidanceOnly(text) {
+const value = String(text || "").trim();
+if (!value || !isVoiceEnabled()) return false;
+return allowedGuidance.test(value);
+}
+if (typeof window.vyomaSpeak === "function" && !window.__vyomaGuidanceOnlySpeakWrapped) {
+const originalSpeak = window.vyomaSpeak;
+window.vyomaSpeak = function (text) {
+if (!guidanceOnly(text)) return;
+return originalSpeak.call(this, text);
 };
-sync();
-document.addEventListener("change", (event) => {
-if (event.target && (
-event.target.id === "voiceGuidanceToggle" ||
-event.target.id === "settingsVoiceToggle"
-)) sync();
-}, true);
-if ("speechSynthesis" in window && typeof window.speechSynthesis.speak === "function") {
-const synth = window.speechSynthesis;
-if (!synth.__vyomaSpeakGuardInstalled) {
-const originalSpeak = synth.speak.bind(synth);
-synth.speak = function(utterance) {
-sync();
-if (!enabled) {
-try { synth.cancel(); } catch (_) {}
-return;
+window.__vyomaGuidanceOnlySpeakWrapped = true;
 }
-return originalSpeak(utterance);
+if (typeof window.vyomaSpeakGuidance === "function" && !window.__vyomaGuidanceOnlyGuidanceWrapped) {
+const originalGuidance = window.vyomaSpeakGuidance;
+window.vyomaSpeakGuidance = function (text) {
+if (!guidanceOnly(text)) return;
+return originalGuidance.call(this, text);
 };
-synth.__vyomaSpeakGuardInstalled = true;
+window.__vyomaGuidanceOnlyGuidanceWrapped = true;
 }
-}
-const originalSetVoice = window.vyomaSetVoiceEnabled;
-window.vyomaSetVoiceEnabled = function(value) {
-enabled = !!value;
-if (typeof originalSetVoice === "function") {
-originalSetVoice(value);
-} else {
-sync();
-}
-if (!enabled && "speechSynthesis" in window) {
-try { window.speechSynthesis.cancel(); } catch (_) {}
-}
-};
 })();
