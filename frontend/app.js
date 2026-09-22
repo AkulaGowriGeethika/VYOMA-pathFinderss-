@@ -1,5 +1,3 @@
-VYOMA – Complete Updated app.js
-JavaScript source code with the updated voice-assistance controls.
 
 /* VYOMA FIREBASE LOGIN GATE */
 (function initVyomaFirebaseLogin(){
