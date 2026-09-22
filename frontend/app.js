@@ -1,4 +1,3 @@
-VYOMA – Final Guidance-Only Voice Filter
 /* VYOMA FIREBASE LOGIN GATE */
 (function initVyomaFirebaseLogin(){
 const loginScreen=document.getElementById("loginScreen");
@@ -3282,4 +3281,57 @@ if (!allowedVoicePhrases.some((pattern) => pattern.test(message))) return;
 return originalSpeak(utterance);
 };
 }
+})();
+/* =========================================================
+STRICT VOICE POLICY
+Speak ONLY maneuver directions or GNSS lost.
+Never speak status, destination, route, or navigation messages.
+========================================================= */
+(function () {
+const synth = window.speechSynthesis;
+if (!synth || typeof synth.speak !== "function") return;
+if (window.__vyomaStrictVoicePolicyInstalled) return;
+window.__vyomaStrictVoicePolicyInstalled = true;
+const nativeSpeak = synth.speak.bind(synth);
+const maneuverPattern = /\b(
+turn\s+(left|right)|
+continue\s+(straight|ahead)|
+go\s+straight|
+keep\s+(left|right)|
+bear\s+(left|right)|
+slight\s+(left|right)|
+sharp\s+(left|right)|
+make\s+a\s+(left|right)\s+turn|
+enter\s+(the\s+)?roundabout|
+take\s+the\s+(first|second|third|fourth)\s+exit|
+merge|
+arrive\s+at\s+(your\s+)?destination
+)\b/ix;
+const gnssPattern = /\bGNSS\b.*\blost\b|\bGNSS\s+signal\s+lost\b/i;
+const blockedStatusPattern = /\b(
+destination\s+selected|
+destination\s*:|
+tap\s+calculate\s+route|
+not\s+navigating|
+route\s+(calculated|ready|found)|
+calculating\s+(route|navigation)|
+navigation\s+(started|ready|active)|
+starting\s+navigation|
+recalculating|
+searching\s+for\s+route|
+route\s+ready|
+ready\s+to\s+navigate|
+dead\s+reckoning|
+current\s+location|
+latitude|
+longitude
+)\b/ix;
+synth.speak = function (utterance) {
+const message = String(utterance && utterance.text || "").trim();
+if (!message) return;
+const isAllowed = maneuverPattern.test(message) || gnssPattern.test(message);
+const isBlocked = blockedStatusPattern.test(message);
+if (!isAllowed || isBlocked) return;
+return nativeSpeak(utterance);
+};
 })();
