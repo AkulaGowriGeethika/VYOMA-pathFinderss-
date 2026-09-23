@@ -92,7 +92,7 @@ BACKEND
 ========================================================= */
 // Replace this with your CURRENT backend Cloudflare URL.
 const BACKEND_URL =
-"https://accomplish-kilometers-lauderdale-month.trycloudflare.com";
+"https://vyoma-navigate.onrender.com";
 /* =========================================================
 GLOBAL STATE
 ========================================================= */
@@ -842,33 +842,6 @@ document.getElementById(
 ).innerHTML = svg;
 }
 /* =========================================================
-DIRECTION-ONLY VOICE GUIDANCE
-Speaks only: left, right, or straight.
-========================================================= */
-let lastSpokenDirection = "";
-function speakDirectionOnly(step) {
-if (!step || !("speechSynthesis" in window)) return;
-const type = step.maneuver?.type || "";
-const modifier = step.maneuver?.modifier || "";
-let direction = "straight";
-if (modifier.includes("left")) {
-direction = "left";
-} else if (modifier.includes("right")) {
-direction = "right";
-} else if (type === "turn" || type === "fork" || type === "roundabout" || type === "rotary" || type === "merge") {
-direction = "straight";
-}
-const maneuverKey = `${type}|${modifier}|${step.maneuver?.location?.join(",") || ""}`;
-if (maneuverKey === lastSpokenDirection) return;
-lastSpokenDirection = maneuverKey;
-window.speechSynthesis.cancel();
-const utterance = new SpeechSynthesisUtterance(direction);
-utterance.rate = 0.95;
-utterance.pitch = 1;
-utterance.volume = 1;
-window.speechSynthesis.speak(utterance);
-}
-/* =========================================================
 UPDATE GUIDANCE
 ========================================================= */
 function updateGuidance(
@@ -970,10 +943,11 @@ step;
 if (
 selectedStep
 ) {
-guidanceInstruction.textContent =
-maneuverInstruction(
-selectedStep
-);
+const instructionText = maneuverInstruction(selectedStep);
+guidanceInstruction.textContent = instructionText;
+if (typeof window.vyomaSpeakManeuver === "function") {
+window.vyomaSpeakManeuver(instructionText);
+}
 guidanceDistance.textContent =
 formatDistance(
 selectedDistance
@@ -986,7 +960,6 @@ setGuidanceIcon(
 selectedStep.maneuver?.type,
 selectedStep.maneuver?.modifier || ""
 );
-speakDirectionOnly(selectedStep);
 return;
 }
 }
@@ -2744,6 +2717,7 @@ VYOMA EXTENDED FEATURE SUITE
 - adaptive vibration/road-event screening
 - phone-to-vehicle calibration baseline
 - offline awareness
+- voice status
 - local session history and export
 These are software-level assistive features; real accuracy requires
 labelled road/trajectory data and vehicle validation.
@@ -2820,6 +2794,11 @@ set("vyomaCalibrationStatus", "BASELINE READY");
 }
 } catch (_) {}
 }
+function voiceStatus() {
+// Status reports are intentionally silent.
+set("vyomaExtendedNote", `Road condition: ${state.roadCondition}. Vibration score: ${state.vibrationScore.toFixed(2)}.
+${navigator.onLine ? "Online" : "Offline"}.`);
+}
 function sessionPayload() {
 return {
 app: "VYOMA",
@@ -2860,6 +2839,7 @@ loadCalibration();
 window.addEventListener("online", updateOfflineStatus);
 window.addEventListener("offline", updateOfflineStatus);
 $("vyomaCalibrateBtn")?.addEventListener("click", calibratePhone);
+$("vyomaVoiceBtn")?.addEventListener("click", voiceStatus);
 $("vyomaSaveSessionBtn")?.addEventListener("click", saveSession);
 $("vyomaExportSessionBtn")?.addEventListener("click", exportHistory);
 });
@@ -2873,33 +2853,10 @@ const vertical = Math.abs(Number(sample?.az || 0));
 const now = Date.now();
 if(vertical > 2.8 && now - lastAlert > 8000){
 lastAlert = now;
-const message = "Possible bump or pothole detected. Slow down and drive carefully.";
-const status = document.getElementById("systemStatus");
-if(status) status.textContent = "Safety alert: possible bump or pothole";
+// Pothole/bump detection remains silent by design.
+// Do not speak or overwrite navigation status for this heuristic.
 }
 };
-})();
-/* =========================================================
-VYOMA SETTINGS: SIGN OUT
-========================================================= */
-(function initVyomaSignOut(){
-if (window.__VYOMA_SIGNOUT_INSTALLED) return;
-window.__VYOMA_SIGNOUT_INSTALLED = true;
-const signOutBtn = document.getElementById("signOutBtn");
-if (signOutBtn) {
-signOutBtn.addEventListener("click", async () => {
-try {
-if (typeof firebase !== "undefined" && firebase.auth) {
-await firebase.auth().signOut();
-} else {
-window.location.reload();
-}
-} catch (error) {
-console.error("VYOMA sign out failed:", error);
-window.alert("Unable to sign out. Please try again.");
-}
-});
-}
 })();
 /* =========================================================
 ABOUT US POPUP
@@ -2927,4 +2884,79 @@ el.addEventListener("click", closeModal);
 document.addEventListener("keydown", event => {
 if(event.key === "Escape" && !modal.hidden) closeModal();
 });
+})();
+/* =========================================================
+VYOMA SIGN OUT
+========================================================= */
+(function initVyomaSignOut() {
+const signOutBtn = document.getElementById("signOutBtn");
+if (!signOutBtn) return;
+signOutBtn.addEventListener("click", async () => {
+if (!window.firebase || !firebase.auth) {
+alert("Firebase authentication is not available.");
+return;
+}
+if (!confirm("Are you sure you want to sign out?")) return;
+const originalText = signOutBtn.textContent;
+signOutBtn.disabled = true;
+signOutBtn.textContent = "Signing out...";
+try {
+await firebase.auth().signOut();
+} catch (error) {
+console.error("Sign out failed:", error);
+alert(error.message || "Sign out failed. Please try again.");
+signOutBtn.disabled = false;
+signOutBtn.textContent = originalText;
+}
+});
+})();
+/* =========================================================
+VYOMA DIRECTION-ONLY VOICE
+Speaks only: "left", "right", or "straight".
+No voice commands, status messages, GNSS messages,
+destination messages, alerts, or voice-assistant UI.
+========================================================= */
+(function installDirectionOnlyVoice() {
+"use strict";
+if (window.__VYOMA_DIRECTION_ONLY_VOICE__) return;
+window.__VYOMA_DIRECTION_ONLY_VOICE__ = true;
+const synth = window.speechSynthesis;
+if (!synth || typeof synth.speak !== "function") return;
+let lastDirection = "";
+let lastSpokenAt = 0;
+function directionFromText(text) {
+const value = String(text || "").toLowerCase();
+if (/\b(left|keep left|bear left|slight left|sharp left)\b/.test(value)) {
+return "left";
+}
+if (/\b(right|keep right|bear right|slight right|sharp right)\b/.test(value)) {
+return "right";
+}
+if (/\b(straight|ahead|continue|go straight|merge|roundabout)\b/.test(value)) {
+return "straight";
+}
+return "";
+}
+function speakDirection(text) {
+const direction = directionFromText(text);
+if (!direction) return false;
+const now = Date.now();
+if (direction === lastDirection && now - lastSpokenAt < 5000) {
+return false;
+}
+lastDirection = direction;
+lastSpokenAt = now;
+synth.cancel();
+const utterance = new SpeechSynthesisUtterance(direction);
+utterance.lang = "en-IN";
+utterance.rate = 0.95;
+utterance.pitch = 1;
+utterance.volume = 1;
+synth.speak(utterance);
+return true;
+}
+window.vyomaSpeakManeuver = speakDirection;
+window.vyomaSpeakGuidance = speakDirection;
+window.vyomaSpeak = speakDirection;
+window.vyomaStopSpeech = () => synth.cancel();
 })();
