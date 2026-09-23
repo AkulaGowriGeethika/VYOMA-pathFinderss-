@@ -1,24 +1,3 @@
-
-/* VYOMA GLOBAL VOICE SAFETY GATE */
-(function(){
-if (window.__VYOMA_GLOBAL_VOICE_GATE_INSTALLED) return;
-window.__VYOMA_GLOBAL_VOICE_GATE_INSTALLED = true;
-const synth = window.speechSynthesis;
-const originalSpeak = synth && synth.speak ? synth.speak.bind(synth) : null;
-if (originalSpeak && synth) {
-synth.speak = function(utterance) {
-const toggle = document.getElementById("voiceGuidanceToggle");
-if (window.vyomaVoiceDisabled === true || (toggle && toggle.checked !== true)) return;
-return originalSpeak(utterance);
-};
-}
-window.vyomaStopAllVoice = function(){
-if ("speechSynthesis" in window) {
-window.speechSynthesis.cancel();
-window.speechSynthesis.pause?.();
-}
-};
-})();
 /* VYOMA FIREBASE LOGIN GATE */
 (function initVyomaFirebaseLogin(){
 const loginScreen=document.getElementById("loginScreen");
@@ -863,6 +842,33 @@ document.getElementById(
 ).innerHTML = svg;
 }
 /* =========================================================
+DIRECTION-ONLY VOICE GUIDANCE
+Speaks only: left, right, or straight.
+========================================================= */
+let lastSpokenDirection = "";
+function speakDirectionOnly(step) {
+if (!step || !("speechSynthesis" in window)) return;
+const type = step.maneuver?.type || "";
+const modifier = step.maneuver?.modifier || "";
+let direction = "straight";
+if (modifier.includes("left")) {
+direction = "left";
+} else if (modifier.includes("right")) {
+direction = "right";
+} else if (type === "turn" || type === "fork" || type === "roundabout" || type === "rotary" || type === "merge") {
+direction = "straight";
+}
+const maneuverKey = `${type}|${modifier}|${step.maneuver?.location?.join(",") || ""}`;
+if (maneuverKey === lastSpokenDirection) return;
+lastSpokenDirection = maneuverKey;
+window.speechSynthesis.cancel();
+const utterance = new SpeechSynthesisUtterance(direction);
+utterance.rate = 0.95;
+utterance.pitch = 1;
+utterance.volume = 1;
+window.speechSynthesis.speak(utterance);
+}
+/* =========================================================
 UPDATE GUIDANCE
 ========================================================= */
 function updateGuidance(
@@ -980,6 +986,7 @@ setGuidanceIcon(
 selectedStep.maneuver?.type,
 selectedStep.maneuver?.modifier || ""
 );
+speakDirectionOnly(selectedStep);
 return;
 }
 }
@@ -993,9 +1000,6 @@ guidanceDistance.textContent =
 "Destination reached";
 guidanceRoad.textContent =
 "";
-if(typeof window.vyomaSpeakGuidance === "function"){
-window.vyomaSpeakGuidance("You have arrived at your destination.");
-}
 setGuidanceIcon(
 "arrive",
 ""
@@ -2060,9 +2064,6 @@ routeLine.setStyle({
 color: "#ef4444",
 dashArray: "8 10"
 });
-if(typeof window.vyomaSpeakGuidance === "function"){
-window.vyomaSpeakGuidance("GNSS signal lost. Dead reckoning is active. Follow the dotted route and drive carefully.");
-}
 }
 setVehicleIcon(true);
 navStatus.textContent =
@@ -2743,7 +2744,6 @@ VYOMA EXTENDED FEATURE SUITE
 - adaptive vibration/road-event screening
 - phone-to-vehicle calibration baseline
 - offline awareness
-- voice status
 - local session history and export
 These are software-level assistive features; real accuracy requires
 labelled road/trajectory data and vehicle validation.
@@ -2820,20 +2820,6 @@ set("vyomaCalibrationStatus", "BASELINE READY");
 }
 } catch (_) {}
 }
-function voiceStatus() {
-const text = `VYOMA status. Road condition ${state.roadCondition}. Vibration score ${state.vibrationScore.toFixed(2)}.
-${navigator.onLine ? "Online" : "Offline"}.`;
-if (window.vyomaVoiceDisabled === true) {
-set("vyomaExtendedNote", text);
-return;
-}
-if ("speechSynthesis" in window) {
-window.speechSynthesis.cancel();
-window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
-} else {
-set("vyomaExtendedNote", text);
-}
-}
 function sessionPayload() {
 return {
 app: "VYOMA",
@@ -2874,7 +2860,6 @@ loadCalibration();
 window.addEventListener("online", updateOfflineStatus);
 window.addEventListener("offline", updateOfflineStatus);
 $("vyomaCalibrateBtn")?.addEventListener("click", calibratePhone);
-$("vyomaVoiceBtn")?.addEventListener("click", voiceStatus);
 $("vyomaSaveSessionBtn")?.addEventListener("click", saveSession);
 $("vyomaExportSessionBtn")?.addEventListener("click", exportHistory);
 });
@@ -2891,204 +2876,18 @@ lastAlert = now;
 const message = "Possible bump or pothole detected. Slow down and drive carefully.";
 const status = document.getElementById("systemStatus");
 if(status) status.textContent = "Safety alert: possible bump or pothole";
-if(typeof window.vyomaSpeakGuidance === "function"){
-window.vyomaSpeakGuidance(message);
-}
 }
 };
 })();
 /* =========================================================
-OPTIONAL TURN-BY-TURN + SAFETY VOICE GUIDANCE
-Browser speech is opt-in and can be stopped at any time.
+VYOMA SETTINGS: SIGN OUT
 ========================================================= */
-(function initOptionalGuidance(){
-const toggle = document.getElementById("voiceGuidanceToggle");
-if(!toggle) return;
-let lastInstruction = "";
-let lastInstructionAt = 0;
-const speakGuidance = (text) => {
-if(!toggle.checked || !text || text === lastInstruction) return;
-const now = Date.now();
-if(now - lastInstructionAt < 5000) return;
-lastInstruction = text;
-lastInstructionAt = now;
-if(typeof window.vyomaSpeak === "function") window.vyomaSpeak(text);
-};
-window.vyomaSpeakGuidance = speakGuidance;
-toggle.addEventListener("change", () => {
-if(toggle.checked){
-speakGuidance("Voice guidance enabled.");
-} else if("speechSynthesis" in window){
-window.speechSynthesis.cancel();
-}
-});
-})();
-/* =========================================================
-VYOMA VOICE ASSISTANT
-Browser Web Speech API: destination search, map commands,
-spoken alerts, and English/Telugu/Hindi language selection.
-========================================================= */
-(function initVyomaVoiceAssistant(){
-const voiceButton = document.getElementById("voiceButton");
-const voiceStopButton = document.getElementById("voiceStopButton");
-const voiceLanguage = document.getElementById("voiceLanguage");
-const voiceStatusEl = document.getElementById("voiceStatus");
-const voiceTranscript = document.getElementById("voiceTranscript");
-const voiceCard = document.querySelector(".voice-assistant-card");
-const destinationInput = document.getElementById("toInput");
-if(!voiceButton || !voiceLanguage || !destinationInput) return;
-const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition = null;
-let listening = false;
-const speechLocale = () => voiceLanguage.value || "en-IN";
-const setVoiceStatus = (text) => { if(voiceStatusEl) voiceStatusEl.textContent = text; };
-const setTranscript = (text) => { if(voiceTranscript) voiceTranscript.textContent = text; };
-window.vyomaSpeak = function(text){
-if(window.vyomaVoiceDisabled === true) return;
-if(!text || !("speechSynthesis" in window)) return;
-window.speechSynthesis.cancel();
-const utterance = new SpeechSynthesisUtterance(String(text));
-utterance.lang = speechLocale();
-utterance.rate = 0.95;
-window.speechSynthesis.speak(utterance);
-};
-window.vyomaVoiceAlert = function(text){
-setTranscript(text);
-window.vyomaSpeak(text);
-};
-function normalize(text){ return String(text || "").toLowerCase().trim(); }
-function removeWakePrefix(text){
-return text.replace(/^(hey\s+)?(vyoma|vyo-ma)[,\s:]*/i, "").trim();
-}
-function executeVoiceCommand(rawText){
-const original = String(rawText || "").trim();
-const text = normalize(removeWakePrefix(original));
-if(!text) return;
-const destinationMatch = text.match(/(?:set|choose|select|go|navigate|take
-me)\s+(?:the\s+)?(?:destination|to)?\s*(?:to|at)?\s+(.+)/i) ||
-text.match(/(?:destination|navigate to|go to)\s+(.+)/i);
-if(destinationMatch && destinationMatch[1]){
-const destination = destinationMatch[1].replace(/[.!?]+$/, "").trim();
-destinationInput.value = destination;
-setVoiceStatus("Destination set");
-setTranscript("Destination: " + destination);
-window.vyomaSpeak("Destination set to " + destination + ". Press calculate route.");
-return;
-}
-if(/\b(start|begin|calculate|find)\b.*\b(route|navigation)\b|\bstart navigation\b/i.test(text)){
-const button = document.getElementById("calculateRouteBtn");
-if(button){ button.click(); window.vyomaSpeak("Calculating your route."); }
-return;
-}
-if(/\b(stop|end|cancel)\b.*\bnavigation\b/i.test(text)){
-const button = document.getElementById("stopBtn");
-if(button){ button.click(); window.vyomaSpeak("Navigation stopped."); }
-return;
-}
-if(/\b(current location|my location|where am i)\b/i.test(text)){
-const button = document.getElementById("useLocationBtn");
-if(button){ button.click(); window.vyomaSpeak("Using your current location."); }
-return;
-}
-if(/\b(clear|remove)\b.*\bdestination\b/i.test(text)){
-destinationInput.value = "";
-setVoiceStatus("Destination cleared");
-setTranscript("Destination cleared");
-window.vyomaSpeak("Destination cleared.");
-return;
-}
-if(/\b(status|report|system status)\b/i.test(text)){
-if(typeof voiceStatus === "function") voiceStatus();
-else window.vyomaSpeak("VYOMA is ready.");
-return;
-}
-setVoiceStatus("Command not recognized");
-setTranscript("Try: set destination to Vijayawada, start navigation, or clear destination.");
-window.vyomaSpeak("I did not understand that command.");
-}
-function beginListening(){
-if(!Recognition){
-setVoiceStatus("Not supported");
-setTranscript("Speech recognition is not supported in this browser. Try Chrome on Android.");
-return;
-}
-if(listening){ return; }
-recognition = new Recognition();
-recognition.lang = speechLocale();
-recognition.interimResults = false;
-recognition.continuous = false;
-recognition.maxAlternatives = 3;
-listening = true;
-if(voiceCard) voiceCard.classList.add("listening");
-setVoiceStatus("Listening...");
-setTranscript("Listening for a command...");
-try { recognition.start(); } catch(_){ listening = false; }
-recognition.onresult = (event) => {
-const text = Array.from(event.results).map(r => r[0].transcript).join(" ").trim();
-setTranscript(text || "No speech detected");
-setVoiceStatus("Command received");
-executeVoiceCommand(text);
-};
-recognition.onerror = (event) => {
-setVoiceStatus("Voice error");
-setTranscript("Voice recognition error: " + event.error);
-};
-recognition.onend = () => {
-listening = false;
-if(voiceCard) voiceCard.classList.remove("listening");
-if(voiceStatusEl && voiceStatusEl.textContent === "Listening...") setVoiceStatus("Ready");
-};
-}
-function stopListening(){
-if(recognition){ try { recognition.stop(); } catch(_){} }
-listening = false;
-if(voiceCard) voiceCard.classList.remove("listening");
-setVoiceStatus("Ready");
-if("speechSynthesis" in window) window.speechSynthesis.cancel();
-}
-voiceButton.addEventListener("click", beginListening);
-if(voiceStopButton) voiceStopButton.addEventListener("click", stopListening);
-voiceLanguage.addEventListener("change", () => {
-setVoiceStatus("Language: " + voiceLanguage.options[voiceLanguage.selectedIndex].text);
-setTranscript("Voice language updated.");
-});
-// Status changes are intentionally silent.
-// No MutationObserver is installed for speech output.
-})();
-/* =========================================================
-VYOMA SETTINGS: DISABLE VOICE + SIGN OUT
-========================================================= */
-(function initVyomaSettingsVoiceAndSignOut(){
-if (window.__VYOMA_SETTINGS_VOICE_SIGNOUT_INSTALLED) return;
-window.__VYOMA_SETTINGS_VOICE_SIGNOUT_INSTALLED = true;
-const disableVoiceBtn = document.getElementById("disableVoiceCompletelyBtn");
+(function initVyomaSignOut(){
+if (window.__VYOMA_SIGNOUT_INSTALLED) return;
+window.__VYOMA_SIGNOUT_INSTALLED = true;
 const signOutBtn = document.getElementById("signOutBtn");
-function stopAllSpeech(){
-if ("speechSynthesis" in window) {
-window.speechSynthesis.cancel();
-window.speechSynthesis.pause?.();
-}
-}
-function disableVoiceCompletely(){
-window.vyomaVoiceDisabled = true;
-window.vyomaVoiceEnabled = false;
-stopAllSpeech();
-if (disableVoiceBtn) {
-disableVoiceBtn.disabled = true;
-disableVoiceBtn.textContent = "Voice Disabled";
-disableVoiceBtn.setAttribute("aria-pressed", "true");
-}
-const guidanceToggle = document.getElementById("voiceGuidanceToggle");
-if (guidanceToggle) guidanceToggle.checked = false;
-}
-window.vyomaVoiceIsOn = () => window.vyomaVoiceDisabled !== true;
-window.vyomaStopSpeech = stopAllSpeech;
-if (disableVoiceBtn) {
-disableVoiceBtn.addEventListener("click", disableVoiceCompletely);
-}
 if (signOutBtn) {
 signOutBtn.addEventListener("click", async () => {
-disableVoiceCompletely();
 try {
 if (typeof firebase !== "undefined" && firebase.auth) {
 await firebase.auth().signOut();
